@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Kho nguyên liệu')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('ingredients')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Kho nguyên liệu</h1>
+                <p class="sub">Theo dõi tồn kho và nhập thêm hàng khi dưới mức tối thiểu</p>
+            </div>
+            <div class="right">
+                <span class="badge badge-danger" th:if="${!lowStock.isEmpty()}"
+                      th:text="${lowStock.size()} + ' nguyên liệu cần nhập'">1 cần nhập</span>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="panel" style="margin-bottom:22px">
+            <div class="panel-head"><h2>Thêm nguyên liệu</h2></div>
+            <div class="panel-body">
+                <form th:action="@{/admin/ingredients/save}" method="post"
+                      style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+                    <div class="field" style="flex:2;min-width:190px;margin:0">
+                        <label for="newName">Tên nguyên liệu</label>
+                        <input type="text" id="newName" name="name" required maxlength="100" placeholder="Ví dụ: Sữa đặc">
+                    </div>
+                    <div class="field" style="flex:1;min-width:110px;margin:0">
+                        <label for="newUnit">Đơn vị</label>
+                        <input type="text" id="newUnit" name="unit" placeholder="kg" required maxlength="20">
+                    </div>
+                    <div class="field" style="flex:1;min-width:110px;margin:0">
+                        <label for="newStock">Tồn kho</label>
+                        <input type="number" id="newStock" name="stockQty" value="0" step="0.01" min="0">
+                    </div>
+                    <div class="field" style="flex:1;min-width:110px;margin:0">
+                        <label for="newMin">Tối thiểu</label>
+                        <input type="number" id="newMin" name="minQty" value="0" step="0.01" min="0">
+                    </div>
+                    <button class="btn btn-primary" type="submit" style="margin-bottom:1px">
+                        <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                        Thêm
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Nguyên liệu &amp; cài đặt</th>
+                        <th style="width:70px">Đơn vị</th>
+                        <th class="num" style="width:90px">Tồn</th>
+                        <th class="num" style="width:90px">Tối thiểu</th>
+                        <th>Trạng thái</th>
+                        <th style="width:170px">Nhập thêm</th>
+                        <th class="actions" style="width:70px"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="i : ${ingredients}">
+                        <td>
+                            <form th:action="@{/admin/ingredients/save}" method="post"
+                                  style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                                <input type="hidden" name="id" th:value="${i.id}">
+                                <input type="text" name="name" th:value="${i.name}" required maxlength="100"
+                                       style="max-width:190px">
+                                <input type="number" name="stockQty" th:value="${i.stockQty}"
+                                       step="0.01" min="0" style="max-width:100px" title="Tồn kho">
+                                <input type="number" name="minQty" th:value="${i.minQty}"
+                                       step="0.01" min="0" style="max-width:100px" title="Mức tối thiểu">
+                                <input type="hidden" name="unit" th:value="${i.unit}">
+                                <button class="btn btn-sm btn-outline" type="submit">Lưu</button>
+                            </form>
+                        </td>
+                        <td th:text="${i.unit}">kg</td>
+                        <td class="num strong" th:text="${i.stockQty}">8.5</td>
+                        <td class="num" th:text="${i.minQty}">3</td>
+                        <td>
+                            <span class="badge badge-success" th:if="${!i.lowStock}">Đủ hàng</span>
+                            <span class="badge badge-danger" th:if="${i.lowStock}">Cần nhập</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/ingredients/{id}/restock(id=${i.id})}" method="post"
+                                  style="display:flex;gap:6px">
+                                <input type="number" name="quantity" placeholder="SL" step="0.01" min="0.01"
+                                       style="max-width:80px" required>
+                                <button class="btn btn-sm btn-primary" type="submit">Nhập</button>
+                            </form>
+                        </td>
+                        <td class="actions">
+                            <form th:action="@{/admin/ingredients/{id}/delete(id=${i.id})}" method="post"
+                                  data-confirm="Xoá nguyên liệu này?">
+                                <button class="btn btn-sm btn-danger" type="submit">
+                                    <svg class="icon icon-sm"><use href="#i-trash"/></svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${ingredients.isEmpty()}">
+                        <td colspan="7" class="muted">Chưa có nguyên liệu.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

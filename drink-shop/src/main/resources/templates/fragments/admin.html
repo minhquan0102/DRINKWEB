@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!-- ============ SIDEBAR QUẢN TRỊ ============ -->
+<aside class="sidebar" th:fragment="sidebar(active)">
+    <div th:replace="~{fragments/icons :: sprite}"></div>
+
+    <a class="logo" th:href="@{/admin}">
+        <span class="logo-mark"><svg class="icon"><use href="#i-cup"/></svg></span>
+        <span class="logo-text">Drink<span class="accent">Shop</span></span>
+    </a>
+
+    <div>
+        <div class="side-label">Cửa hàng</div>
+        <nav class="side-nav">
+            <a class="side-link" th:href="@{/}" target="_blank">
+                <svg class="icon"><use href="#i-store"/></svg>
+                Xem cửa hàng
+            </a>
+            <a class="side-link" th:href="@{/admin/orders}"
+               th:classappend="${active == 'orders'} ? 'active'">
+                <svg class="icon"><use href="#i-package"/></svg>
+                Đơn hàng
+            </a>
+        </nav>
+    </div>
+
+    <div th:if="${isManager}">
+        <div class="side-label">Quản lý</div>
+        <nav class="side-nav">
+            <a class="side-link" th:href="@{/admin}"
+               th:classappend="${active == 'dashboard'} ? 'active'">
+                <svg class="icon"><use href="#i-grid"/></svg>
+                Tổng quan
+            </a>
+            <a class="side-link" th:href="@{/admin/reports}"
+               th:classappend="${active == 'reports'} ? 'active'">
+                <svg class="icon"><use href="#i-chart"/></svg>
+                Báo cáo
+            </a>
+            <a class="side-link" th:href="@{/admin/products}"
+               th:classappend="${active == 'products'} ? 'active'">
+                <svg class="icon"><use href="#i-cup"/></svg>
+                Đồ uống
+            </a>
+            <a class="side-link" th:href="@{/admin/categories}"
+               th:classappend="${active == 'categories'} ? 'active'">
+                <svg class="icon"><use href="#i-tag"/></svg>
+                Danh mục
+            </a>
+            <a class="side-link" th:href="@{/admin/vouchers}"
+               th:classappend="${active == 'vouchers'} ? 'active'">
+                <svg class="icon"><use href="#i-sparkles"/></svg>
+                Mã giảm giá
+            </a>
+            <a class="side-link" th:href="@{/admin/ingredients}"
+               th:classappend="${active == 'ingredients'} ? 'active'">
+                <svg class="icon"><use href="#i-box"/></svg>
+                Kho nguyên liệu
+            </a>
+        </nav>
+    </div>
+
+    <div th:if="${isManager}">
+        <div class="side-label">Hệ thống</div>
+        <nav class="side-nav">
+            <a class="side-link" th:href="@{/admin/users}"
+               th:classappend="${active == 'users'} ? 'active'">
+                <svg class="icon"><use href="#i-users"/></svg>
+                Tài khoản
+            </a>
+        </nav>
+    </div>
+
+    <div class="side-foot">
+        <div class="side-user">
+            <span class="avatar" th:text="${#strings.substring(currentUser.fullName, 0, 1)}">A</span>
+            <div style="min-width:0">
+                <b th:text="${currentUser.fullName}">Tên</b>
+                <span th:text="${currentUser.role.name}">Vai trò</span>
+            </div>
+        </div>
+        <form th:action="@{/logout}" method="post" style="margin:0">
+            <button class="side-link" type="submit" style="width:100%;border:none;background:transparent;cursor:pointer">
+                <svg class="icon"><use href="#i-logout"/></svg>
+                Đăng xuất
+            </button>
+        </form>
+    </div>
+</aside>
+
+</body>
+</html>

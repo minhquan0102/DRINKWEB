@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đơn hàng của tôi')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow">Tài khoản</span>
+                <h1>Đơn hàng của tôi</h1>
+                <p class="sub" th:if="${!orders.isEmpty()}">
+                    <span th:text="${orders.size()}">0</span> đơn hàng · theo dõi trạng thái và xem lại chi tiết
+                </p>
+            </div>
+            <a class="btn btn-primary btn-sm" th:href="@{/menu}">
+                <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                Đặt món mới
+            </a>
+        </div>
+
+        <div class="empty" th:if="${orders.isEmpty()}">
+            <div class="empty-ico"><svg class="icon icon-lg"><use href="#i-package"/></svg></div>
+            <h3>Bạn chưa có đơn hàng nào</h3>
+            <p>Đặt ly đầu tiên để nhận ưu đãi chào mừng nhé.</p>
+            <a class="btn btn-primary" th:href="@{/menu}">Xem menu</a>
+        </div>
+
+        <div class="stack" th:if="${!orders.isEmpty()}">
+            <article class="order-card" th:each="o : ${orders}">
+                <div class="order-card-head">
+                    <span class="order-code" th:text="${o.orderCode}">DH20261114001</span>
+                    <span class="badge" th:classappend="'badge-' + ${o.status.badge}" th:text="${o.status.label}">Hoàn thành</span>
+                    <span class="small muted" style="margin-left:auto">
+                        <svg class="icon icon-sm" style="display:inline;vertical-align:-3px"><use href="#i-clock"/></svg>
+                        <span th:text="${@fmt.dt(o.createdAt)}">14/11/2026 09:15</span>
+                    </span>
+                </div>
+
+                <div class="order-card-body">
+                    <div class="order-thumbs">
+                        <div class="order-thumb" th:each="item, st : ${o.items}" th:if="${st.index < 4}">
+                            <img th:src="${item.product.displayImage}" th:alt="${item.product.name}"
+                                 data-fallback="@{/images/drinks/mac-dinh.svg}">
+                        </div>
+                        <span class="badge badge-secondary badge-plain" th:if="${o.items.size() > 4}"
+                              th:text="'+' + ${o.items.size() - 4}">+2</span>
+                    </div>
+
+                    <div class="small muted">
+                        <div>
+                            <b class="strong" th:text="${o.fulfillment.label}">Giao hàng</b>
+                            <span th:if="${o.tableNo != null}" th:text="' · Bàn ' + ${o.tableNo}"></span>
+                        </div>
+                        <div th:text="${o.totalQuantity} + ' ly'">2 ly</div>
+                    </div>
+
+                    <div style="margin-left:auto;text-align:right">
+                        <div class="tiny muted">Tổng tiền</div>
+                        <div class="p-price" th:text="${@fmt.vnd(o.totalAmount)}">133.800đ</div>
+                    </div>
+                </div>
+
+                <div class="order-card-foot">
+                    <span class="small muted">
+                        <svg class="icon icon-sm" style="display:inline;vertical-align:-3px"><use href="#i-card"/></svg>
+                        <span th:text="${o.orderType.name() == 'ONLINE' ? 'Đặt online' : 'Tại quầy'}">Online</span>
+                        <span th:if="${o.voucher != null}" th:text="' · voucher ' + ${o.voucher.code}"></span>
+                    </span>
+                    <a class="btn btn-outline btn-sm" th:href="@{/orders/{code}(code=${o.orderCode})}">
+                        Xem chi tiết
+                        <svg class="icon icon-sm"><use href="#i-chevron-right"/></svg>
+                    </a>
+                </div>
+            </article>
+        </div>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

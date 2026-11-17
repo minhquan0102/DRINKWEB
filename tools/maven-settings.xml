@@ -1,0 +1,9 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <!--
+      Kho thư viện dùng chung cho Maven và extension Java của VS Code.
+      Đã có sẵn toàn bộ dependency của project nên build không cần tải lại từ Internet.
+    -->
+    <localRepository>D:\AMLO\tools\m2repo</localRepository>
+</settings>

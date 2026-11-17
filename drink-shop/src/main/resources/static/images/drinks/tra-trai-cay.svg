@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Trà đào cam sả">
+  <defs>
+    <linearGradient id="bgC" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fdf1dc"/><stop offset="1" stop-color="#fbdcb9"/>
+    </linearGradient>
+    <linearGradient id="teaC" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8bd63"/><stop offset="1" stop-color="#e2691f"/>
+    </linearGradient>
+    <clipPath id="cupC">
+      <path d="M142 118h116l-9 110a17 17 0 0 1-17 15h-64a17 17 0 0 1-17-15z"/>
+    </clipPath>
+  </defs>
+  <rect width="400" height="300" fill="url(#bgC)"/>
+  <circle cx="200" cy="140" r="108" fill="#ffffff" opacity=".5"/>
+  <ellipse cx="200" cy="258" rx="82" ry="11" fill="#b0591c" opacity=".13"/>
+  <rect x="224" y="46" width="12" height="94" rx="6" fill="#d94f45" transform="rotate(9 230 93)"/>
+  <path d="M142 118h116l-9 110a17 17 0 0 1-17 15h-64a17 17 0 0 1-17-15z" fill="url(#teaC)"/>
+  <g clip-path="url(#cupC)">
+    <rect x="142" y="118" width="116" height="24" fill="#ffe9c4" opacity=".5"/>
+    <g fill="#ffffff" opacity=".26">
+      <rect x="158" y="146" width="24" height="24" rx="6" transform="rotate(-14 170 158)"/>
+      <rect x="206" y="160" width="24" height="24" rx="6" transform="rotate(12 218 172)"/>
+      <rect x="176" y="188" width="22" height="22" rx="5" transform="rotate(8 187 199)"/>
+    </g>
+    <g fill="#f7b26a" opacity=".9">
+      <circle cx="200" cy="228" r="9"/><circle cx="222" cy="222" r="6"/>
+      <circle cx="180" cy="220" r="6"/>
+    </g>
+  </g>
+  <path d="M160 126l-6 92" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity=".34"/>
+  <ellipse cx="200" cy="118" rx="58" ry="9.5" fill="#ffffff"/>
+  <ellipse cx="200" cy="118" rx="58" ry="9.5" fill="none" stroke="#f0cfa9" stroke-width="2"/>
+  <path d="M152 109h96" stroke="#efc9a0" stroke-width="8" stroke-linecap="round"/>
+  <g transform="translate(96 78) rotate(-18)">
+    <circle cx="0" cy="0" r="21" fill="#f9a63a"/>
+    <circle cx="0" cy="0" r="15" fill="#ffc873"/>
+    <path d="M0 -15V15M-15 0H15M-10 -10 10 10M10 -10-10 10" stroke="#fdf1d8" stroke-width="2.2" opacity=".8"/>
+  </g>
+  <path d="M268 86c14-12 30-13 40-4-8 16-25 22-40 4z" fill="#3f8f5a"/>
+  <path d="M268 86c12 2 22 8 30 16" stroke="#2e7047" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</svg>

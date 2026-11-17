@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đồ uống')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('products')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1 th:text="${isNew} ? 'Thêm đồ uống' : 'Sửa đồ uống'">Thêm đồ uống</h1>
+                <p class="sub">Ảnh minh hoạ sẽ tự lấy theo danh mục nếu bạn để trống đường dẫn ảnh.</p>
+            </div>
+            <div class="right">
+                <a class="btn btn-outline btn-sm" th:href="@{/admin/products}">
+                    <svg class="icon icon-sm"><use href="#i-chevron-left"/></svg>
+                    Danh sách
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <form class="form-card" th:action="@{/admin/products/save}" method="post" style="max-width:820px">
+            <input type="hidden" name="id" th:if="${!isNew}" th:value="${product.id}">
+
+            <div class="field">
+                <label for="name">Tên đồ uống</label>
+                <input type="text" id="name" name="name" th:value="${product.name}" required maxlength="150"
+                       placeholder="Ví dụ: Trà sữa trân châu đường đen">
+            </div>
+
+            <div class="form-grid">
+                <div class="field">
+                    <label for="categoryId">Danh mục</label>
+                    <select id="categoryId" name="categoryId" required>
+                        <option th:each="c : ${categories}" th:value="${c.id}"
+                                th:selected="${!isNew and product.category != null and product.category.id == c.id}"
+                                th:text="${c.name}">Danh mục</option>
+                    </select>
+                </div>
+                <div class="field">
+                    <label for="basePrice">Giá size M (đồng)</label>
+                    <input type="number" id="basePrice" name="basePrice" th:value="${product.basePrice}"
+                           min="0" step="1000" required placeholder="35000">
+                    <span class="field-hint">Giá của size M — size khác cộng/trừ theo bảng product_sizes.</span>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="imageUrl">Đường dẫn ảnh (không bắt buộc)</label>
+                <input type="text" id="imageUrl" name="imageUrl" th:value="${product.imageUrl}"
+                       placeholder="/images/ten-anh.jpg hoặc https://...">
+            </div>
+
+            <div class="field">
+                <label for="description">Mô tả</label>
+                <textarea id="description" name="description" maxlength="500"
+                          placeholder="Nguyên liệu, hương vị nổi bật..." th:text="${product.description}"></textarea>
+            </div>
+
+            <div class="field">
+                <label class="check">
+                    <input type="checkbox" name="available" value="true"
+                           th:checked="${isNew or product.available}">
+                    Đang bán (còn hàng)
+                </label>
+                <span class="field-hint">Bỏ chọn để tạm ẩn món khỏi menu mà không mất dữ liệu đơn cũ.</span>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px;padding-top:18px;border-top:1px solid var(--line)">
+                <button class="btn btn-primary" type="submit">
+                    <svg class="icon icon-sm"><use href="#i-check"/></svg>
+                    Lưu đồ uống
+                </button>
+                <a class="btn btn-outline" th:href="@{/admin/products}">Huỷ</a>
+            </div>
+        </form>
+
+    </main>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

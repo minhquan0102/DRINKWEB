@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Menu')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow">Thực đơn</span>
+                <h1>Menu đồ uống</h1>
+                <p class="sub">
+                    <span th:text="${products.size()}">5</span> món
+                    <span th:if="${keyword != null and !keyword.isBlank()}">
+                        cho từ khoá “<b th:text="${keyword}"></b>”
+                    </span>
+                    · chọn size, topping và mức đường đá tuỳ thích
+                </p>
+            </div>
+
+            <form th:action="@{/menu}" method="get" class="searchbar">
+                <svg class="icon"><use href="#i-search"/></svg>
+                <input type="search" name="keyword" th:value="${keyword}" placeholder="Tìm trà sữa, cà phê...">
+                <button class="btn btn-primary btn-sm" type="submit">Tìm</button>
+            </form>
+        </div>
+
+        <div class="chips" style="margin-bottom:26px">
+            <a class="chip" th:classappend="${activeCategoryId == null} ? 'active'" th:href="@{/menu}">
+                <svg class="icon"><use href="#i-grid"/></svg>
+                Tất cả
+            </a>
+            <a class="chip" th:each="c : ${categories}"
+               th:classappend="${activeCategoryId != null and activeCategoryId == c.id} ? 'active'"
+               th:href="@{/menu(categoryId=${c.id})}">
+                <span th:text="${c.name}">Danh mục</span>
+            </a>
+        </div>
+
+        <div class="product-grid" th:if="${!products.isEmpty()}">
+            <article class="p-card" th:each="p : ${products}">
+                <a class="p-media" th:href="@{/product/{id}(id=${p.id})}">
+                    <img th:src="${p.displayImage}" th:alt="${p.name}"
+                         data-fallback="@{/images/drinks/mac-dinh.svg}" loading="lazy">
+                    <span class="p-badge" th:text="${p.category.name}">Danh mục</span>
+                    <span class="p-badge off" th:if="${!p.available}" style="left:auto;right:12px">Hết hàng</span>
+                </a>
+                <div class="p-body">
+                    <a class="p-name" th:href="@{/product/{id}(id=${p.id})}" th:text="${p.name}">Tên món</a>
+                    <p class="p-desc" th:text="${p.description}">Mô tả</p>
+                    <div class="p-foot">
+                        <span class="p-price">
+                            <span th:text="${@fmt.money(p.basePrice)}">35.000</span><small>đ</small>
+                        </span>
+                        <a class="p-add" th:href="@{/product/{id}(id=${p.id})}"
+                           th:title="'Chọn ' + ${p.name}">
+                            <svg class="icon"><use href="#i-plus"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <div class="empty" th:if="${products.isEmpty()}">
+            <div class="empty-ico"><svg class="icon icon-lg"><use href="#i-search"/></svg></div>
+            <h3>Không tìm thấy đồ uống phù hợp</h3>
+            <p>Thử từ khoá khác hoặc xem toàn bộ menu.</p>
+            <a class="btn btn-primary" th:href="@{/menu}">Xem toàn bộ menu</a>
+        </div>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

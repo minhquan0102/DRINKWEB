@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-label="Đồ uống">
+  <defs>
+    <linearGradient id="cup" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7e0c2"/>
+      <stop offset="100%" stop-color="#e8c69a"/>
+    </linearGradient>
+  </defs>
+  <rect width="200" height="200" fill="#f6e3cb"/>
+  <path d="M62 52h76l-9 104a14 14 0 0 1-14 13H85a14 14 0 0 1-14-13z" fill="#ffffff" opacity=".85"/>
+  <path d="M66 78h68l-7 78a12 12 0 0 1-12 11H85a12 12 0 0 1-12-11z" fill="url(#cup)"/>
+  <rect x="78" y="30" width="8" height="46" rx="4" fill="#c98b4b" transform="rotate(12 82 53)"/>
+  <circle cx="88" cy="70" r="4" fill="#6b4423" opacity=".55"/>
+  <circle cx="103" cy="84" r="4" fill="#6b4423" opacity=".55"/>
+  <circle cx="112" cy="68" r="4" fill="#6b4423" opacity=".55"/>
+  <circle cx="120" cy="92" r="4" fill="#6b4423" opacity=".55"/>
+  <circle cx="94" cy="104" r="4" fill="#6b4423" opacity=".55"/>
+  <circle cx="116" cy="118" r="4" fill="#6b4423" opacity=".55"/>
+</svg>

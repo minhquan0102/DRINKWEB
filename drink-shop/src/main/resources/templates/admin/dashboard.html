@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Tổng quan')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('dashboard')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Tổng quan quán</h1>
+                <p class="sub">Số liệu lấy trực tiếp từ CSDL drink_shop · cập nhật theo thời gian thực</p>
+            </div>
+            <div class="right">
+                <a class="btn btn-outline btn-sm" th:href="@{/admin/reports}">
+                    <svg class="icon icon-sm"><use href="#i-chart"/></svg>
+                    Báo cáo
+                </a>
+                <a class="btn btn-primary btn-sm" th:href="@{/admin/orders}">
+                    <svg class="icon icon-sm"><use href="#i-package"/></svg>
+                    Xử lý đơn
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="stat-grid">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Doanh thu hôm nay</span>
+                    <span class="stat-ico green"><svg class="icon icon-sm"><use href="#i-wallet"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${@fmt.vnd(todayRevenue)}">0đ</div>
+                <div class="stat-note">Chỉ tính đơn đã hoàn thành</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Đơn hôm nay</span>
+                    <span class="stat-ico blue"><svg class="icon icon-sm"><use href="#i-package"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${todayOrders}">0</div>
+                <div class="stat-note">Tất cả kênh bán</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Chờ xác nhận</span>
+                    <span class="stat-ico amber"><svg class="icon icon-sm"><use href="#i-clock"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${pendingOrders}">0</div>
+                <div class="stat-note">Cần xử lý ngay</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Khách hàng</span>
+                    <span class="stat-ico"><svg class="icon icon-sm"><use href="#i-users"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${totalCustomers}">0</div>
+                <div class="stat-note">Tài khoản khách đã đăng ký</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Món đang bán</span>
+                    <span class="stat-ico"><svg class="icon icon-sm"><use href="#i-cup"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${totalProducts}">0</div>
+                <div class="stat-note">Trong menu hiện tại</div>
+            </div>
+        </div>
+
+        <!-- BIỂU ĐỒ -->
+        <div class="cols" style="margin-bottom:22px">
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Doanh thu 14 ngày gần nhất</h2>
+                        <span class="tiny muted">tổng hợp từ view v_daily_revenue, tách theo kênh bán</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box tall">
+                        <canvas id="chartRevenue"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Trạng thái đơn</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box tall">
+                        <canvas id="chartStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cols" style="margin-bottom:26px">
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Top 5 đồ uống bán chạy</h2>
+                        <span class="tiny muted">theo số lượng ly</span>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box">
+                        <canvas id="chartTop"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Phương thức thanh toán</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="chart-box">
+                        <canvas id="chartPayment"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cols">
+            <div class="stack">
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Doanh thu theo ngày</h2>
+                            <span class="tiny muted">view v_daily_revenue</span>
+                        </div>
+                        <a class="section-link tiny" th:href="@{/admin/reports}">Xem tất cả</a>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data" style="min-width:520px">
+                            <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Kênh bán</th>
+                                <th class="num">Số đơn</th>
+                                <th class="num">Doanh thu</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="row : ${revenueRows}">
+                                <td th:text="${@fmt.date(row.saleDate)}">14/11/2026</td>
+                                <td>
+                                    <span class="badge" th:classappend="${row.orderType == 'ONLINE'} ? 'badge-info' : 'badge-secondary'"
+                                          th:text="${row.orderType == 'ONLINE' ? 'Online' : 'Tại quầy'}">Online</span>
+                                </td>
+                                <td class="num" th:text="${row.totalOrders}">0</td>
+                                <td class="num strong" th:text="${@fmt.vnd(row.revenue)}">0đ</td>
+                            </tr>
+                            <tr th:if="${revenueRows.isEmpty()}">
+                                <td colspan="4" class="muted">Chưa có đơn hoàn thành.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Món bán chạy</h2>
+                            <span class="tiny muted">view v_top_products</span>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data" style="min-width:480px">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Đồ uống</th>
+                                <th class="num">Đã bán</th>
+                                <th class="num">Doanh thu</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="row, st : ${topProducts}">
+                                <td th:text="${st.count}">1</td>
+                                <td class="strong" th:text="${row.productName}">Trà sữa</td>
+                                <td class="num" th:text="${row.qtySold}">0</td>
+                                <td class="num" th:text="${@fmt.vnd(row.revenue)}">0đ</td>
+                            </tr>
+                            <tr th:if="${topProducts.isEmpty()}">
+                                <td colspan="4" class="muted">Chưa có dữ liệu bán hàng.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="stack">
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>Nguyên liệu sắp hết</h2>
+                        <span class="badge badge-danger badge-plain" th:if="${!lowStock.isEmpty()}"
+                              th:text="${lowStock.size()}">1</span>
+                    </div>
+                    <div class="panel-body">
+                        <div th:if="${lowStock.isEmpty()}" class="muted small">Tất cả nguyên liệu đều đủ.</div>
+
+                        <div th:each="i : ${lowStock}"
+                             style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-bottom:1px dashed var(--line)">
+                            <div>
+                                <div class="strong small" th:text="${i.name}">Trân châu</div>
+                                <div class="tiny muted">
+                                    Tồn <b th:text="${i.stockQty}">2</b> / tối thiểu <span th:text="${i.minQty}">3</span>
+                                    <span th:text="${i.unit}">kg</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-danger">Cần nhập</span>
+                        </div>
+
+                        <a class="btn btn-outline btn-sm btn-block" style="margin-top:14px"
+                           th:href="@{/admin/ingredients}">
+                            <svg class="icon icon-sm"><use href="#i-box"/></svg>
+                            Quản lý kho
+                        </a>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head"><h2>Lối tắt</h2></div>
+                    <div class="panel-body stack" style="gap:9px">
+                        <a class="btn btn-primary btn-block" th:href="@{/admin/orders}">
+                            <svg class="icon icon-sm"><use href="#i-package"/></svg>
+                            Xử lý đơn hàng
+                        </a>
+                        <a class="btn btn-outline btn-block" th:href="@{/admin/products/new}">
+                            <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                            Thêm đồ uống
+                        </a>
+                        <a class="btn btn-outline btn-block" th:href="@{/admin/vouchers/new}">
+                            <svg class="icon icon-sm"><use href="#i-tag"/></svg>
+                            Tạo mã giảm giá
+                        </a>
+                        <a class="btn btn-ghost btn-block" th:href="@{/}" target="_blank">
+                            <svg class="icon icon-sm"><use href="#i-store"/></svg>
+                            Xem cửa hàng
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+    </main>
+</div>
+
+<script th:inline="javascript">
+    window.CHART_REVENUE = /*[[${revenueChart}]]*/ [];
+    window.CHART_STATUS = /*[[${statusChart}]]*/ [];
+    window.CHART_PAYMENT = /*[[${paymentChart}]]*/ [];
+    window.CHART_TOP = /*[[${topProductChart}]]*/ [];
+</script>
+<script th:src="@{/js/vendor/chart.umd.min.js}"></script>
+<script th:src="@{/js/admin-charts.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

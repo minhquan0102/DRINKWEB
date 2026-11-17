@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Giỏ hàng')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow">Bước 1 / 3</span>
+                <h1>Giỏ hàng</h1>
+                <p class="sub">
+                    <span th:text="${cart.totalQuantity}">0</span> ly trong giỏ
+                    <span th:if="${!cart.items.isEmpty()}">· kiểm tra lại topping và ghi chú trước khi đặt</span>
+                </p>
+            </div>
+            <form th:action="@{/cart/clear}" method="post" th:if="${!cart.items.isEmpty()}" style="margin:0">
+                <button class="btn btn-outline btn-sm" type="submit">
+                    <svg class="icon icon-sm"><use href="#i-trash"/></svg>
+                    Xoá tất cả
+                </button>
+            </form>
+        </div>
+
+        <div class="empty" th:if="${cart.items.isEmpty()}">
+            <div class="empty-ico"><svg class="icon icon-lg"><use href="#i-cart"/></svg></div>
+            <h3>Giỏ hàng đang trống</h3>
+            <p>Chọn vài ly trà sữa hoặc cà phê cho ngày hôm nay nhé.</p>
+            <a class="btn btn-primary" th:href="@{/menu}">Xem menu</a>
+        </div>
+
+        <div class="cart-layout" th:if="${!cart.items.isEmpty()}">
+
+            <div class="panel">
+                <div class="panel-head">
+                    <h2>Sản phẩm</h2>
+                    <span class="small muted" th:text="${cart.items.size()} + ' dòng'">1 dòng</span>
+                </div>
+                <div class="panel-body">
+
+                    <div class="line-item" th:each="item : ${cart.items}">
+                        <div class="line-thumb">
+                            <img th:src="${item.imageUrl}" th:alt="${item.productName}"
+                                 data-fallback="@{/images/drinks/mac-dinh.svg}">
+                        </div>
+
+                        <div>
+                            <div class="line-title" th:text="${item.productName}">Tên món</div>
+                            <div class="line-meta">
+                                <span th:text="${item.sizeName}">Size M</span>
+                                <span>Đường <b th:text="${item.sugarLevel}">100%</b></span>
+                                <span>Đá <b th:text="${item.iceLevel}">100%</b></span>
+                            </div>
+                            <div class="line-meta" th:if="${!item.toppingIds.isEmpty()}">
+                                <span th:text="'Topping: ' + ${item.toppingText}">Topping: Trân châu</span>
+                            </div>
+                            <div class="line-meta" th:if="${item.note != null}">
+                                <span th:text="'Ghi chú: ' + ${item.note}">Ghi chú</span>
+                            </div>
+
+                            <div class="line-ctl">
+                                <form class="qty-mini" th:action="@{/cart/update}" method="post" data-auto-submit>
+                                    <input type="hidden" name="lineId" th:value="${item.lineId}">
+                                    <button type="button" data-step="-1" aria-label="Giảm">
+                                        <svg class="icon icon-sm"><use href="#i-minus"/></svg>
+                                    </button>
+                                    <input type="number" name="quantity" th:value="${item.quantity}"
+                                           min="1" max="50" aria-label="Số lượng">
+                                    <button type="button" data-step="1" aria-label="Tăng">
+                                        <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                                    </button>
+                                    <button type="submit" title="Cập nhật" aria-label="Cập nhật">
+                                        <svg class="icon icon-sm"><use href="#i-check"/></svg>
+                                    </button>
+                                </form>
+
+                                <form th:action="@{/cart/remove}" method="post" style="margin:0">
+                                    <input type="hidden" name="lineId" th:value="${item.lineId}">
+                                    <button class="icon-btn" type="submit" title="Xoá món">
+                                        <svg class="icon icon-sm"><use href="#i-trash"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="line-price">
+                            <span th:text="${@fmt.vnd(item.lineTotal)}">70.000đ</span>
+                            <small th:text="${@fmt.vnd(item.unitPrice)} + '/ly'">35.000đ/ly</small>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <aside class="panel sticky">
+                <div class="panel-head">
+                    <h2>Tóm tắt đơn</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="sum-row">
+                        <span>Số ly</span>
+                        <span th:text="${cart.totalQuantity}">0</span>
+                    </div>
+                    <div class="sum-row">
+                        <span>Tiền hàng</span>
+                        <span th:text="${@fmt.vnd(subtotal)}">0đ</span>
+                    </div>
+                    <div class="sum-row">
+                        <span>Phí giao hàng</span>
+                        <span class="muted small">+15.000đ nếu giao</span>
+                    </div>
+
+                    <div class="sum-total">
+                        <span class="label">Tạm tính</span>
+                        <span class="value" th:text="${@fmt.vnd(subtotal)}">0đ</span>
+                    </div>
+
+                    <a class="btn btn-primary btn-block btn-lg" style="margin-top:16px" th:href="@{/checkout}">
+                        Tiến hành đặt hàng
+                        <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+                    </a>
+                    <a class="btn btn-ghost btn-block" style="margin-top:8px" th:href="@{/menu}">Chọn thêm món</a>
+
+                    <div class="note" style="margin-top:16px">
+                        <svg class="icon icon-sm"><use href="#i-shield"/></svg>
+                        <span>Thanh toán an toàn · đổi trả trong 24h nếu chưa hài lòng</span>
+                    </div>
+
+                    <p class="tiny muted" style="margin:14px 0 0" th:if="${currentUser == null}">
+                        Bạn cần <a th:href="@{/login}">đăng nhập</a> trước khi đặt hàng.
+                    </p>
+                </div>
+            </aside>
+        </div>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

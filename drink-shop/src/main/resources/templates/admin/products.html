@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quản lý đồ uống')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('products')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Đồ uống</h1>
+                <p class="sub"><span th:text="${products.size()}">0</span> món trong menu</p>
+            </div>
+            <div class="right">
+                <a class="btn btn-primary btn-sm" th:href="@{/admin/products/new}">
+                    <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                    Thêm đồ uống
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th style="width:64px">Ảnh</th>
+                        <th>Đồ uống</th>
+                        <th>Danh mục</th>
+                        <th class="num">Giá size M</th>
+                        <th>Trạng thái</th>
+                        <th class="actions">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${products}">
+                        <td>
+                            <div class="line-thumb" style="width:48px;height:48px;border-radius:11px">
+                                <img th:src="${p.displayImage}" th:alt="${p.name}"
+                                     data-fallback="@{/images/drinks/mac-dinh.svg}">
+                            </div>
+                        </td>
+                        <td>
+                            <div class="strong" th:text="${p.name}">Tên</div>
+                            <div class="tiny muted" th:text="${p.description}">Mô tả</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary badge-plain" th:text="${p.category.name}">Danh mục</span>
+                        </td>
+                        <td class="num strong" th:text="${@fmt.vnd(p.basePrice)}">0đ</td>
+                        <td>
+                            <span class="badge badge-success" th:if="${p.available}">Đang bán</span>
+                            <span class="badge badge-secondary" th:unless="${p.available}">Ngừng bán</span>
+                        </td>
+                        <td class="actions">
+                            <a class="btn btn-sm btn-outline" th:href="@{/admin/products/{id}/edit(id=${p.id})}">
+                                <svg class="icon icon-sm"><use href="#i-edit"/></svg>
+                                Sửa
+                            </a>
+                            <form th:action="@{/admin/products/{id}/delete(id=${p.id})}" method="post"
+                                  style="display:inline" data-confirm="Xoá đồ uống này?">
+                                <button class="btn btn-sm btn-danger" type="submit">
+                                    <svg class="icon icon-sm"><use href="#i-trash"/></svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${products.isEmpty()}">
+                        <td colspan="6" class="muted">Chưa có đồ uống nào. Hãy thêm món đầu tiên.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

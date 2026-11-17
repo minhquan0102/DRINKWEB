@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đơn hàng')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('orders')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Đơn hàng</h1>
+                <p class="sub">
+                    Chờ xác nhận <b th:text="${pendingCount}">0</b> ·
+                    Đang pha chế <b th:text="${preparingCount}">0</b>
+                </p>
+            </div>
+            <div class="right">
+                <a class="btn btn-ghost btn-sm" th:href="@{/admin/orders}">
+                    <svg class="icon icon-sm"><use href="#i-grid"/></svg>
+                    Tất cả
+                </a>
+                <a class="btn btn-primary btn-sm" th:href="@{/admin/orders(status='PENDING')}">
+                    <svg class="icon icon-sm"><use href="#i-clock"/></svg>
+                    Đơn chờ
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="tabs" style="margin-bottom:20px">
+            <a class="tab" th:classappend="${selectedStatus == null} ? 'active'" th:href="@{/admin/orders}">Tất cả</a>
+            <a class="tab" th:each="s : ${statuses}"
+               th:classappend="${selectedStatus != null and selectedStatus.name() == s.name()} ? 'active'"
+               th:href="@{/admin/orders(status=${s})}"
+               th:text="${s.label}">Chờ xác nhận</a>
+        </div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Thời gian</th>
+                        <th>Khách / Bàn</th>
+                        <th>Hình thức</th>
+                        <th class="num">Số ly</th>
+                        <th class="num">Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th class="actions"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="o : ${orders}">
+                        <td class="strong" th:text="${o.orderCode}">DH123</td>
+                        <td class="small muted" th:text="${@fmt.dt(o.createdAt)}">14/11 09:15</td>
+                        <td class="small">
+                            <div th:if="${o.customer != null}" class="strong" th:text="${o.customer.user.fullName}">Khách</div>
+                            <div th:if="${o.customer == null}" class="muted">Khách vãng lai</div>
+                            <div class="tiny muted" th:if="${o.tableNo != null}" th:text="'Bàn ' + ${o.tableNo}"></div>
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary badge-plain" th:text="${o.fulfillment.label}">Mang đi</span>
+                        </td>
+                        <td class="num" th:text="${o.totalQuantity}">1</td>
+                        <td class="num strong" th:text="${@fmt.vnd(o.totalAmount)}">0đ</td>
+                        <td>
+                            <span class="badge" th:classappend="'badge-' + ${o.status.badge}"
+                                  th:text="${o.status.label}">Chờ</span>
+                        </td>
+                        <td class="actions">
+                            <a class="btn btn-sm btn-outline" th:href="@{/admin/orders/{id}(id=${o.id})}">
+                                Xử lý
+                                <svg class="icon icon-sm"><use href="#i-chevron-right"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr th:if="${orders.isEmpty()}">
+                        <td colspan="8" class="muted">Không có đơn hàng nào ở trạng thái này.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

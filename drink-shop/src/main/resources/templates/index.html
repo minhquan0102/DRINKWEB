@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Trang chủ')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <!-- HERO -->
+        <section class="hero">
+            <div class="hero-copy">
+                <span class="eyebrow">Pha chế tươi mỗi ngày</span>
+                <h1 class="hero-title">
+                    Nước giải khát <em>tươi mát</em><br>cho ngày dài tỉnh táo
+                </h1>
+                <p class="hero-sub">
+                    Trà sữa trân châu, cà phê phin, trà trái cây, sinh tố và đá xay —
+                    nguyên liệu chọn lọc, pha theo từng ly. Đặt online, giao tận nơi
+                    trong 30 phút.
+                </p>
+                <div class="hero-actions">
+                    <a class="btn btn-primary btn-lg" th:href="@{/menu}">
+                        Xem menu
+                        <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+                    </a>
+                    <a class="btn btn-outline btn-lg" th:href="@{/cart}">
+                        <svg class="icon icon-sm"><use href="#i-cart"/></svg>
+                        Giỏ hàng của bạn
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <b th:text="${totalProducts} + '+'">8+</b>
+                        <span>Món trong menu</span>
+                    </div>
+                    <div class="hero-stat">
+                        <b th:text="${categories.size()}">5</b>
+                        <span>Danh mục</span>
+                    </div>
+                    <div class="hero-stat">
+                        <b>30 phút</b>
+                        <span>Giao hàng</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-art">
+                <span class="hero-tag top">
+                    <svg class="icon icon-sm" style="color:var(--green)"><use href="#i-check-circle"/></svg>
+                    Nguyên liệu tươi
+                </span>
+                <img th:src="@{/images/hero-drink.svg}" alt="Ly trà sữa trân châu" width="430" height="380">
+                <span class="hero-tag bottom">
+                    <svg class="icon icon-sm" style="color:var(--brand)"><use href="#i-star"/></svg>
+                    Tích điểm mỗi lần mua
+                </span>
+            </div>
+        </section>
+
+        <!-- DANH MỤC -->
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">Danh mục</span>
+                    <h2 class="section-title">Hôm nay bạn uống gì?</h2>
+                </div>
+                <a class="section-link" th:href="@{/menu}">
+                    Toàn bộ menu
+                    <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+                </a>
+            </div>
+
+            <div class="chips">
+                <a class="chip" th:href="@{/menu}">
+                    <svg class="icon"><use href="#i-grid"/></svg>
+                    Tất cả
+                </a>
+                <a class="chip" th:each="c : ${categories}" th:href="@{/menu(categoryId=${c.id})}">
+                    <span th:text="${c.name}">Trà sữa</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- SẢN PHẨM -->
+        <section class="section" style="margin-top:38px">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">Gợi ý</span>
+                    <h2 class="section-title">Đồ uống nổi bật</h2>
+                </div>
+            </div>
+
+            <div class="product-grid" th:if="${!products.isEmpty()}">
+                <article class="p-card" th:each="p : ${products}">
+                    <a class="p-media" th:href="@{/product/{id}(id=${p.id})}">
+                        <img th:src="${p.displayImage}" th:alt="${p.name}"
+                             data-fallback="@{/images/drinks/mac-dinh.svg}" loading="lazy">
+                        <span class="p-badge" th:text="${p.category.name}">Trà sữa</span>
+                    </a>
+                    <div class="p-body">
+                        <a class="p-name" th:href="@{/product/{id}(id=${p.id})}" th:text="${p.name}">Tên món</a>
+                        <p class="p-desc" th:text="${p.description}">Mô tả</p>
+                        <div class="p-foot">
+                            <span class="p-price">
+                                <span th:text="${@fmt.money(p.basePrice)}">35.000</span><small>đ</small>
+                            </span>
+                            <a class="p-add" th:href="@{/product/{id}(id=${p.id})}"
+                               th:title="'Chọn ' + ${p.name}">
+                                <svg class="icon"><use href="#i-plus"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <div class="empty" th:if="${products.isEmpty()}">
+                <div class="empty-ico"><svg class="icon icon-lg"><use href="#i-cup"/></svg></div>
+                <h3>Menu đang được cập nhật</h3>
+                <p>Quán sẽ sớm bổ sung đồ uống mới.</p>
+            </div>
+        </section>
+
+        <!-- ƯU ĐÃI -->
+        <section class="section" th:if="${!vouchers.isEmpty()}">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">Ưu đãi</span>
+                    <h2 class="section-title">Mã giảm giá đang chạy</h2>
+                </div>
+            </div>
+
+            <div class="cols" style="grid-template-columns:repeat(auto-fit,minmax(260px,1fr))">
+                <div class="panel panel-pad" th:each="v : ${vouchers}"
+                     style="border-style:dashed;border-color:#e9cfb6;background:linear-gradient(160deg,#fffdfa,#fdf4ea)">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">
+                        <div>
+                            <div class="panel-title" style="margin-bottom:6px">Mã giảm giá</div>
+                            <div style="font-size:1.35rem;font-weight:900;letter-spacing:.04em;color:var(--brand-hover)"
+                                 th:text="${v.code}">WELCOME10</div>
+                        </div>
+                        <span class="badge badge-primary badge-plain" th:if="${v.discountType.name() == 'PERCENT'}"
+                              th:text="'-' + ${v.discountValue} + '%'">-10%</span>
+                        <span class="badge badge-primary badge-plain" th:if="${v.discountType.name() == 'FIXED'}"
+                              th:text="'-' + ${@fmt.money(v.discountValue)} + 'đ'">-15.000đ</span>
+                    </div>
+                    <p class="small muted" style="margin:10px 0 6px" th:text="${v.description}">Mô tả</p>
+                    <p class="tiny muted" style="margin:0">
+                        Đơn tối thiểu <b th:text="${@fmt.vnd(v.minOrderAmount)}">50.000đ</b>
+                        · HSD <span th:text="${@fmt.date(v.endDate.toLocalDate())}">31/12/2026</span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VÌ SAO CHỌN -->
+        <section class="section">
+            <div class="section-head">
+                <div>
+                    <span class="eyebrow">Vì sao chọn DrinkShop</span>
+                    <h2 class="section-title">Pha chế chỉn chu từng ly</h2>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-ico"><svg class="icon"><use href="#i-leaf"/></svg></div>
+                    <div>
+                        <h3>Nguyên liệu tươi</h3>
+                        <p>Trà ủ mới mỗi sáng, trái cây cắt trong ngày, không hương liệu công nghiệp.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-ico"><svg class="icon"><use href="#i-truck"/></svg></div>
+                    <div>
+                        <h3>Giao nhanh 30 phút</h3>
+                        <p>Đơn online được xác nhận ngay và giao trong nội thành, phí chỉ 15.000đ.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-ico"><svg class="icon"><use href="#i-sparkles"/></svg></div>
+                    <div>
+                        <h3>Tích điểm thành viên</h3>
+                        <p>Mỗi 10.000đ được 1 điểm, dùng cho các ưu đãi dành riêng khách thân thiết.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

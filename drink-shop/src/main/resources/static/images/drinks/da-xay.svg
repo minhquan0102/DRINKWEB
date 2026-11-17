@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Matcha đá xay">
+  <defs>
+    <linearGradient id="bgE" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#eff6ec"/><stop offset="1" stop-color="#d6e8d6"/>
+    </linearGradient>
+    <linearGradient id="matchaE" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b8d99a"/><stop offset="1" stop-color="#5e9549"/>
+    </linearGradient>
+    <clipPath id="cupE">
+      <path d="M140 122h120l-9 106a17 17 0 0 1-17 15h-68a17 17 0 0 1-17-15z"/>
+    </clipPath>
+  </defs>
+  <rect width="400" height="300" fill="url(#bgE)"/>
+  <circle cx="200" cy="140" r="108" fill="#ffffff" opacity=".5"/>
+  <ellipse cx="200" cy="258" rx="84" ry="11" fill="#2f5c2a" opacity=".12"/>
+  <rect x="223" y="54" width="12" height="88" rx="6" fill="#3f7d4a" transform="rotate(9 229 98)"/>
+  <path d="M140 122h120l-9 106a17 17 0 0 1-17 15h-68a17 17 0 0 1-17-15z" fill="url(#matchaE)"/>
+  <g clip-path="url(#cupE)">
+    <rect x="140" y="122" width="120" height="24" fill="#e6f3d6" opacity=".5"/>
+    <g fill="#ffffff" opacity=".3">
+      <rect x="158" y="150" width="24" height="24" rx="6" transform="rotate(-16 170 162)"/>
+      <rect x="206" y="166" width="24" height="24" rx="6" transform="rotate(12 218 178)"/>
+      <rect x="172" y="192" width="22" height="22" rx="5" transform="rotate(22 183 203)"/>
+    </g>
+  </g>
+  <path d="M158 130l-6 90" stroke="#ffffff" stroke-width="8" stroke-linecap="round" opacity=".34"/>
+  <path d="M150 118c0-16 22-24 50-24s50 8 50 24z" fill="#f6fbf0"/>
+  <path d="M150 118c0-16 22-24 50-24s50 8 50 24z" fill="none" stroke="#cfe4bd" stroke-width="2"/>
+  <path d="M200 92c-8-8-4-16 0-20 5 5 9 12 0 20z" fill="#c9dfb2"/>
+  <ellipse cx="200" cy="118" rx="52" ry="8" fill="#f8fdf4" opacity=".9"/>
+</svg>

@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đăng nhập')}"></head>
+<body>
+
+<div class="auth">
+
+    <aside class="auth-aside">
+        <div th:replace="~{fragments/icons :: sprite}"></div>
+
+        <a class="logo" th:href="@{/}">
+            <span class="logo-mark"><svg class="icon"><use href="#i-cup"/></svg></span>
+            <span class="logo-text">Drink<span class="accent">Shop</span></span>
+        </a>
+
+        <div class="auth-quote">
+            <h2>Mỗi ly nước là một khoảnh khắc dễ chịu.</h2>
+            <p>Trà sữa pha theo từng ly, cà phê phin truyền thống và trà trái cây tươi mát — đặt online, giao tận nơi.</p>
+
+            <div class="auth-points" style="margin-top:26px">
+                <div><svg class="icon icon-sm"><use href="#i-truck"/></svg> Giao trong 30 phút nội thành</div>
+                <div><svg class="icon icon-sm"><use href="#i-sparkles"/></svg> Tích điểm mỗi 10.000đ</div>
+                <div><svg class="icon icon-sm"><use href="#i-shield"/></svg> Đổi trả trong 24h</div>
+            </div>
+        </div>
+
+        <img class="auth-art" th:src="@{/images/hero-drink.svg}" alt="">
+    </aside>
+
+    <div class="auth-main">
+        <div class="auth-card">
+
+            <a class="logo brand-mobile" th:href="@{/}">
+                <span class="logo-mark"><svg class="icon"><use href="#i-cup"/></svg></span>
+                <span class="logo-text">Drink<span class="accent">Shop</span></span>
+            </a>
+
+            <h1>Chào mừng trở lại</h1>
+            <p class="sub">Đăng nhập bằng số điện thoại để đặt món và theo dõi đơn hàng.</p>
+
+            <div class="alert alert-danger" th:if="${param.error}">
+                <svg class="icon"><use href="#i-alert"/></svg>
+                <span>Số điện thoại hoặc mật khẩu không đúng, hoặc tài khoản đang bị khoá.</span>
+            </div>
+            <div class="alert alert-success" th:if="${param.logout}">
+                <svg class="icon"><use href="#i-check-circle"/></svg>
+                <span>Bạn đã đăng xuất. Hẹn gặp lại!</span>
+            </div>
+            <div class="alert alert-success" th:if="${success}">
+                <svg class="icon"><use href="#i-check-circle"/></svg>
+                <span th:text="${success}"></span>
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="field">
+                    <label for="phone">Số điện thoại</label>
+                    <input type="tel" id="phone" name="phone" placeholder="0901000001"
+                           autocomplete="username" required autofocus maxlength="15">
+                </div>
+                <div class="field">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" id="password" name="password" placeholder="••••••"
+                           autocomplete="current-password" required>
+                </div>
+                <button class="btn btn-primary btn-block btn-lg" type="submit">
+                    Đăng nhập
+                    <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+                </button>
+            </form>
+
+            <div class="auth-foot">
+                Chưa có tài khoản? <a th:href="@{/register}">Đăng ký khách hàng mới</a>
+            </div>
+
+            <div class="demo-hint">
+                <b>Tài khoản demo</b> — mật khẩu <code>123456</code><br>
+                <b>0901000001</b> chủ quán · <b>0901000002</b> quản lý<br>
+                <b>0901000003</b> thu ngân · <b>0901000004</b> pha chế<br>
+                <b>0912000001</b> khách hàng
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

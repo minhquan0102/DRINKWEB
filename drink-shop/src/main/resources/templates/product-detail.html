@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết đồ uống')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Trang chủ</a>
+            <span class="sep">/</span>
+            <a th:href="@{/menu}">Menu</a>
+            <span class="sep">/</span>
+            <a th:href="@{/menu(categoryId=${product.category.id})}" th:text="${product.category.name}">Danh mục</a>
+            <span class="sep">/</span>
+            <span th:text="${product.name}">Tên món</span>
+        </nav>
+
+        <div class="detail-grid">
+
+            <!-- HÌNH ẢNH + MÔ TẢ -->
+            <div class="stack">
+                <div class="media-card">
+                    <img th:src="${product.displayImage}" th:alt="${product.name}"
+                         data-fallback="@{/images/drinks/mac-dinh.svg}">
+                </div>
+
+                <div class="panel panel-pad">
+                    <span class="eyebrow">Về món này</span>
+                    <h2 style="font-size:1.15rem;margin-bottom:8px" th:text="${product.name}">Tên món</h2>
+                    <p class="muted" style="margin-bottom:16px" th:text="${product.description}">Mô tả</p>
+
+                    <div class="pill-row">
+                        <span class="badge badge-secondary badge-plain" th:text="${product.category.name}">Danh mục</span>
+                        <span class="badge badge-secondary badge-plain">4 size</span>
+                        <span class="badge badge-secondary badge-plain">5 topping</span>
+                        <span class="badge badge-success" th:if="${product.available}">Đang bán</span>
+                        <span class="badge badge-danger" th:unless="${product.available}">Tạm hết hàng</span>
+                    </div>
+                </div>
+
+                <div class="panel panel-pad">
+                    <span class="eyebrow">Bí quyết</span>
+                    <h3 style="font-size:1.02rem;margin-bottom:10px">Thưởng thức trọn vị</h3>
+                    <ul class="tips">
+                        <li>
+                            <svg class="icon icon-sm"><use href="#i-check-circle"/></svg>
+                            Uống ngay sau khi nhận để trân châu còn dẻo và đá chưa tan.
+                        </li>
+                        <li>
+                            <svg class="icon icon-sm"><use href="#i-check-circle"/></svg>
+                            Chọn 50% đường nếu bạn thích vị thanh, ít ngọt.
+                        </li>
+                        <li>
+                            <svg class="icon icon-sm"><use href="#i-check-circle"/></svg>
+                            Thêm kem cheese hoặc pudding để ly nước béo và đậm hơn.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- HỘP MUA -->
+            <aside class="buybox sticky">
+                <h1 th:text="${product.name}">Tên món</h1>
+
+                <div class="rating-line">
+                    <span class="stars" th:if="${averageRating > 0}">
+                        <span th:text="${averageRating}">4.6</span> ★
+                    </span>
+                    <span th:if="${averageRating > 0}">·</span>
+                    <span th:text="${reviews.size()} + ' đánh giá'">0 đánh giá</span>
+                </div>
+
+                <div class="price-row">
+                    <span class="amount" th:text="${@fmt.money(product.basePrice)}">35.000</span>
+                    <span class="unit">đ / size M</span>
+                </div>
+
+                <form th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+
+                    <div class="opt-group">
+                        <div class="opt-label">
+                            <span>Chọn size</span>
+                            <span class="tiny muted">Bắt buộc</span>
+                        </div>
+                        <div class="opt-pills">
+                            <label class="opt-pill" th:each="s : ${sizes}">
+                                <input type="radio" name="sizeId" th:value="${s.id}" required
+                                       th:checked="${s.priceDelta.signum() == 0}">
+                                <span th:text="${s.name}">Size M</span>
+                                <small th:text="${@fmt.money(product.basePrice.add(s.priceDelta))} + 'đ'">35.000đ</small>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="opt-group">
+                        <div class="opt-label"><span>Mức đường</span></div>
+                        <div class="opt-pills">
+                            <label class="opt-pill" th:each="lv : ${ {'0%','30%','50%','70%','100%'} }">
+                                <input type="radio" name="sugarLevel" th:value="${lv}"
+                                       th:checked="${lv == '100%'}">
+                                <span th:text="${lv}">100%</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="opt-group">
+                        <div class="opt-label"><span>Mức đá</span></div>
+                        <div class="opt-pills">
+                            <label class="opt-pill" th:each="lv : ${ {'0%','30%','50%','70%','100%'} }">
+                                <input type="radio" name="iceLevel" th:value="${lv}"
+                                       th:checked="${lv == '100%'}">
+                                <span th:text="${lv}">100%</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="opt-group" th:if="${!toppings.isEmpty()}">
+                        <div class="opt-label">
+                            <span>Topping</span>
+                            <span class="tiny muted">Chọn nhiều</span>
+                        </div>
+                        <div class="top-grid">
+                            <label class="top-opt" th:each="t : ${toppings}">
+                                <input type="checkbox" name="toppingIds" th:value="${t.id}">
+                                <span style="display:flex;flex-direction:column;line-height:1.2">
+                                    <span style="font-size:.86rem;font-weight:650" th:text="${t.name}">Topping</span>
+                                    <span style="font-size:.75rem;color:var(--muted-2)" th:text="'+' + ${@fmt.money(t.price)} + 'đ'">+5.000đ</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="note">Ghi chú</label>
+                        <textarea id="note" name="note" placeholder="Ví dụ: ít đá, không đường, cho thêm ống hút..."></textarea>
+                    </div>
+
+                    <div style="display:flex;gap:12px;align-items:center;margin-top:6px">
+                        <div class="qty">
+                            <button type="button" data-step="-1" aria-label="Giảm">
+                                <svg class="icon icon-sm"><use href="#i-minus"/></svg>
+                            </button>
+                            <input type="number" name="quantity" value="1" min="1" max="50" aria-label="Số lượng">
+                            <button type="button" data-step="1" aria-label="Tăng">
+                                <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                            </button>
+                        </div>
+                        <button class="btn btn-primary" type="submit" style="flex:1" th:disabled="${!product.available}">
+                            <svg class="icon"><use href="#i-cart"/></svg>
+                            Thêm vào giỏ
+                        </button>
+                    </div>
+                </form>
+
+                <div style="margin-top:18px;padding-top:16px;border-top:1px solid var(--line)" class="stack" >
+                    <div class="note">
+                        <svg class="icon icon-sm"><use href="#i-truck"/></svg>
+                        <span>Giao trong 30 phút · phí 15.000đ cho đơn giao hàng</span>
+                    </div>
+                    <div class="note">
+                        <svg class="icon icon-sm"><use href="#i-shield"/></svg>
+                        <span>Không hài lòng? Quán đổi ly mới trong 24h</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- ĐÁNH GIÁ CỦA KHÁCH -->
+        <div class="panel" style="margin-top:26px">
+            <div class="panel-head">
+                <h2>Đánh giá của khách</h2>
+                <span class="badge badge-warning badge-plain" th:if="${averageRating > 0}">
+                    <span th:text="${averageRating}">4.6</span>/5 · <span th:text="${reviews.size()}">5</span> lượt
+                </span>
+            </div>
+            <div class="panel-body">
+                <div th:if="${reviews.isEmpty()}" class="muted small">Chưa có đánh giá nào cho món này.</div>
+
+                <div class="review" th:each="r : ${reviews}">
+                    <div class="review-head">
+                        <span class="avatar" th:text="${#strings.substring(r.customer.user.fullName, 0, 1)}">K</span>
+                        <b th:text="${r.customer.user.fullName}">Khách</b>
+                        <span class="stars" th:text="${r.rating} + ' ★'">5 ★</span>
+                        <span class="tiny muted" style="margin-left:auto"
+                              th:text="${@fmt.date(r.createdAt.toLocalDate())}">01/01/2026</span>
+                    </div>
+                    <p th:text="${r.comment}">Nội dung đánh giá</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

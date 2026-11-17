@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300" role="img" aria-label="Trà sữa trân châu">
+  <defs>
+    <linearGradient id="bgA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fdf2e4"/><stop offset="1" stop-color="#f5dcc0"/>
+    </linearGradient>
+    <linearGradient id="teaA" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e3bd94"/><stop offset="1" stop-color="#a9683a"/>
+    </linearGradient>
+    <linearGradient id="glassA" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".9"/><stop offset="1" stop-color="#ffffff" stop-opacity=".55"/>
+    </linearGradient>
+    <clipPath id="cupA">
+      <path d="M141 120h118l-9.5 108a17 17 0 0 1-17 15h-65a17 17 0 0 1-17-15z"/>
+    </clipPath>
+  </defs>
+  <rect width="400" height="300" fill="url(#bgA)"/>
+  <circle cx="200" cy="138" r="110" fill="#ffffff" opacity=".5"/>
+  <ellipse cx="200" cy="258" rx="84" ry="11" fill="#8a5a2a" opacity=".13"/>
+  <rect x="225" y="44" width="13" height="98" rx="6.5" fill="#e2703a" transform="rotate(10 231 93)"/>
+  <path d="M141 120h118l-9.5 108a17 17 0 0 1-17 15h-65a17 17 0 0 1-17-15z" fill="url(#teaA)"/>
+  <g clip-path="url(#cupA)">
+    <rect x="141" y="120" width="118" height="26" fill="#f6e6d3" opacity=".55"/>
+    <g fill="#3a2415" opacity=".92">
+      <circle cx="165" cy="216" r="7"/><circle cx="185" cy="226" r="6.4"/>
+      <circle cx="205" cy="214" r="7.4"/><circle cx="225" cy="225" r="6.2"/>
+      <circle cx="176" cy="203" r="5.6"/><circle cx="214" cy="200" r="5.8"/>
+      <circle cx="193" cy="190" r="5.2"/><circle cx="236" cy="206" r="5.4"/>
+    </g>
+    <g fill="#ffffff" opacity=".22">
+      <rect x="152" y="140" width="22" height="22" rx="5" transform="rotate(-14 163 151)"/>
+      <rect x="214" y="152" width="20" height="20" rx="5" transform="rotate(16 224 162)"/>
+    </g>
+  </g>
+  <path d="M141 120h118l-9.5 108a17 17 0 0 1-17 15h-65a17 17 0 0 1-17-15z" fill="url(#glassA)" opacity=".35"/>
+  <path d="M158 128l-6 92" stroke="#ffffff" stroke-width="9" stroke-linecap="round" opacity=".38"/>
+  <ellipse cx="200" cy="120" rx="59" ry="10" fill="#ffffff"/>
+  <ellipse cx="200" cy="120" rx="59" ry="10" fill="none" stroke="#e7ceb2" stroke-width="2"/>
+  <path d="M149 111h102" stroke="#e2c5a4" stroke-width="9" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Mã giảm giá')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('vouchers')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Mã giảm giá</h1>
+                <p class="sub"><span th:text="${vouchers.size()}">0</span> mã trong hệ thống</p>
+            </div>
+            <div class="right">
+                <a class="btn btn-primary btn-sm" th:href="@{/admin/vouchers/new}">
+                    <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                    Tạo mã
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Mã</th>
+                        <th>Mức giảm</th>
+                        <th class="num">Đơn tối thiểu</th>
+                        <th>Thời gian áp dụng</th>
+                        <th class="num">Đã dùng</th>
+                        <th>Trạng thái</th>
+                        <th class="actions">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="v : ${vouchers}">
+                        <td>
+                            <div class="strong" style="letter-spacing:.03em" th:text="${v.code}">CODE</div>
+                            <div class="tiny muted" th:text="${v.description}">Mô tả</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-primary badge-plain" th:if="${v.discountType.name() == 'PERCENT'}"
+                                  th:text="${v.discountValue} + '%'">10%</span>
+                            <span class="badge badge-primary badge-plain" th:if="${v.discountType.name() == 'FIXED'}"
+                                  th:text="${@fmt.vnd(v.discountValue)}">15.000đ</span>
+                            <div class="tiny muted" th:if="${v.maxDiscount != null}"
+                                 th:text="'tối đa ' + ${@fmt.vnd(v.maxDiscount)}">tối đa 20.000đ</div>
+                        </td>
+                        <td class="num" th:text="${@fmt.vnd(v.minOrderAmount)}">0đ</td>
+                        <td class="small">
+                            <div th:text="${@fmt.dt(v.startDate)}">01/11/2026</div>
+                            <div class="muted" th:text="'→ ' + ${@fmt.dt(v.endDate)}">31/12/2026</div>
+                        </td>
+                        <td class="num"
+                            th:text="${v.usedCount} + ' / ' + ${v.usageLimit == null ? '∞' : v.usageLimit}">1 / 1000</td>
+                        <td>
+                            <span class="badge badge-success" th:if="${v.active}">Đang áp dụng</span>
+                            <span class="badge badge-secondary" th:unless="${v.active}">Tạm dừng</span>
+                        </td>
+                        <td class="actions">
+                            <a class="btn btn-sm btn-outline" th:href="@{/admin/vouchers/{id}/edit(id=${v.id})}">
+                                <svg class="icon icon-sm"><use href="#i-edit"/></svg>
+                                Sửa
+                            </a>
+                            <form th:action="@{/admin/vouchers/{id}/delete(id=${v.id})}" method="post"
+                                  style="display:inline" data-confirm="Xoá mã giảm giá này?">
+                                <button class="btn btn-sm btn-danger" type="submit">
+                                    <svg class="icon icon-sm"><use href="#i-trash"/></svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${vouchers.isEmpty()}">
+                        <td colspan="7" class="muted">Chưa có mã giảm giá nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

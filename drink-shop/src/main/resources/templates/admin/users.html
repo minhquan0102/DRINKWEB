@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Quản lý tài khoản')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('users')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Tài khoản</h1>
+                <p class="sub">
+                    <span th:text="${total}">0</span> tài khoản ·
+                    <span th:text="${customers}">0</span> khách hàng ·
+                    <span th:text="${staff}">0</span> nhân sự
+                </p>
+            </div>
+            <div class="right">
+                <a class="btn btn-primary btn-sm" th:href="@{/admin/users/new}">
+                    <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                    Thêm tài khoản
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="stat-grid" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr))">
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Tổng tài khoản</span>
+                    <span class="stat-ico"><svg class="icon icon-sm"><use href="#i-users"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${total}">10</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Khách hàng</span>
+                    <span class="stat-ico blue"><svg class="icon icon-sm"><use href="#i-user"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${customers}">5</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Nhân sự</span>
+                    <span class="stat-ico green"><svg class="icon icon-sm"><use href="#i-shield"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${staff}">5</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-top">
+                    <span class="stat-label">Đang bị khoá</span>
+                    <span class="stat-ico amber"><svg class="icon icon-sm"><use href="#i-close"/></svg></span>
+                </div>
+                <div class="stat-value" th:text="${locked}">0</div>
+            </div>
+        </div>
+
+        <form class="panel" style="margin-bottom:20px" th:action="@{/admin/users}" method="get">
+            <div class="panel-body" style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end">
+                <div class="field" style="flex:2;min-width:220px;margin:0">
+                    <label for="keyword">Tìm kiếm</label>
+                    <input type="search" id="keyword" name="keyword" th:value="${keyword}"
+                           placeholder="Họ tên, số điện thoại hoặc email">
+                </div>
+                <div class="field" style="flex:1;min-width:150px;margin:0">
+                    <label for="role">Vai trò</label>
+                    <select id="role" name="role">
+                        <option value="">Tất cả vai trò</option>
+                        <option th:each="r : ${roles}" th:value="${r.code}"
+                                th:selected="${selectedRole != null and selectedRole == r.code}"
+                                th:text="${r.name}">Khách hàng</option>
+                    </select>
+                </div>
+                <div class="field" style="flex:1;min-width:150px;margin:0">
+                    <label for="status">Trạng thái</label>
+                    <select id="status" name="status">
+                        <option value="">Tất cả trạng thái</option>
+                        <option th:each="s : ${statuses}" th:value="${s}"
+                                th:selected="${selectedStatus != null and selectedStatus.name() == s.name()}"
+                                th:text="${s.name() == 'ACTIVE' ? 'Đang hoạt động' : (s.name() == 'LOCKED' ? 'Bị khoá' : 'Ngừng dùng')}">
+                            Đang hoạt động
+                        </option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" type="submit" style="margin-bottom:1px">
+                    <svg class="icon icon-sm"><use href="#i-search"/></svg>
+                    Lọc
+                </button>
+                <a class="btn btn-ghost" th:href="@{/admin/users}" style="margin-bottom:1px">Xoá lọc</a>
+            </div>
+        </form>
+
+        <div class="table-card">
+            <div class="table-scroll">
+                <table class="data">
+                    <thead>
+                    <tr>
+                        <th>Tài khoản</th>
+                        <th>Liên hệ</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tạo</th>
+                        <th class="actions">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${users}">
+                        <td>
+                            <div style="display:flex;align-items:center;gap:11px">
+                                <span class="avatar" th:text="${#strings.substring(u.fullName, 0, 1)}">A</span>
+                                <div>
+                                    <div class="strong" th:text="${u.fullName}">Nguyễn Văn An</div>
+                                    <div class="tiny muted" th:text="'#' + ${u.id}">#1</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="small">
+                            <div th:text="${u.phone}">0901000001</div>
+                            <div class="muted" th:if="${u.email != null}" th:text="${u.email}">a@b.c</div>
+                        </td>
+                        <td>
+                            <span class="badge badge-plain"
+                                  th:classappend="${u.roleCode == 'OWNER' ? 'badge-dark' : (u.roleCode == 'MANAGER' ? 'badge-primary' : (u.roleCode == 'CUSTOMER' ? 'badge-secondary' : 'badge-info'))}"
+                                  th:text="${u.role.name}">Chủ quán</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-success" th:if="${u.status.name() == 'ACTIVE'}">Hoạt động</span>
+                            <span class="badge badge-danger" th:if="${u.status.name() == 'LOCKED'}">Đã khoá</span>
+                            <span class="badge badge-secondary" th:if="${u.status.name() == 'INACTIVE'}">Ngừng dùng</span>
+                        </td>
+                        <td class="small muted" th:text="${@fmt.date(u.createdAt.toLocalDate())}">01/01/2026</td>
+                        <td class="actions">
+                            <a class="btn btn-sm btn-outline" th:href="@{/admin/users/{id}/edit(id=${u.id})}">
+                                <svg class="icon icon-sm"><use href="#i-edit"/></svg>
+                                Sửa
+                            </a>
+                            <form th:action="@{/admin/users/{id}/toggle(id=${u.id})}" method="post"
+                                  style="display:inline"
+                                  th:attr="data-confirm=${u.status.name() == 'ACTIVE' ? 'Khoá tài khoản này?' : 'Mở khoá tài khoản này?'}">
+                                <button class="btn btn-sm" type="submit"
+                                        th:classappend="${u.status.name() == 'ACTIVE' ? 'btn-danger' : 'btn-outline'}">
+                                    <svg class="icon icon-sm">
+                                        <use th:href="${u.status.name() == 'ACTIVE' ? '#i-lock' : '#i-check'}"/>
+                                    </svg>
+                                    <span th:text="${u.status.name() == 'ACTIVE' ? 'Khoá' : 'Mở'}">Khoá</span>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${users.isEmpty()}">
+                        <td colspan="6" class="muted">Không tìm thấy tài khoản phù hợp.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

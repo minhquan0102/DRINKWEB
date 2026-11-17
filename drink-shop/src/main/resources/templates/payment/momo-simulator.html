@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Thanh toán MoMo')}"></head>
+<body>
+
+<main class="page" style="padding-top:40px">
+    <div class="container" style="max-width:760px">
+
+        <div class="alert alert-warning">
+            <svg class="icon"><use href="#i-info"/></svg>
+            <span>
+                Đây là <b>trang mô phỏng cổng MoMo</b> (app.momo.simulate=true).
+                Chữ ký HMAC-SHA256 được tạo và kiểm tra giống thật.
+            </span>
+        </div>
+
+        <div class="panel" style="overflow:hidden">
+            <div style="background:linear-gradient(120deg,#a50064,#d82d8b);color:#fff;padding:22px 26px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap">
+                <div>
+                    <div style="font-size:1.35rem;font-weight:900;letter-spacing:-.02em">MoMo</div>
+                    <div style="font-size:.82rem;opacity:.9">Ví điện tử · môi trường test</div>
+                </div>
+                <div style="text-align:right;font-size:.8rem;opacity:.9">
+                    <div>Partner: <b>MOMO</b></div>
+                    <div>Sandbox</div>
+                </div>
+            </div>
+
+            <div class="panel-body">
+                <div class="kv" style="margin-bottom:18px">
+                    <div>
+                        <div class="k">Mã đơn hàng</div>
+                        <div class="v" th:text="${order.orderCode}">DH20261116001</div>
+                    </div>
+                    <div>
+                        <div class="k">Nội dung</div>
+                        <div class="v" th:text="'Thanh toan don hang ' + ${order.orderCode}">Thanh toan</div>
+                    </div>
+                    <div>
+                        <div class="k">Số tiền</div>
+                        <div class="v" style="font-size:1.3rem;font-weight:900;color:#a50064"
+                             th:text="${@fmt.vnd(order.totalAmount)}">129.750đ</div>
+                    </div>
+                </div>
+
+                <form th:action="@{/payment/momo/simulator}" method="post"
+                      style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+                    <input type="hidden" name="orderCode" th:value="${order.orderCode}">
+                    <button class="btn btn-primary btn-lg" type="submit" name="success" value="true"
+                            style="background:#a50064;border-color:#a50064">
+                        <svg class="icon icon-sm"><use href="#i-check-circle"/></svg>
+                        Thanh toán <span th:text="${@fmt.vnd(order.totalAmount)}">0đ</span>
+                    </button>
+                    <button class="btn btn-outline btn-lg" type="submit" name="success" value="false">
+                        <svg class="icon icon-sm"><use href="#i-close"/></svg>
+                        Huỷ giao dịch
+                    </button>
+                    <a class="btn btn-ghost btn-lg" th:href="@{/orders/{code}(code=${order.orderCode})}">
+                        Quay lại đơn
+                    </a>
+                </form>
+            </div>
+        </div>
+
+        <p class="tiny muted" style="margin-top:14px">
+            Muốn dùng MoMo sandbox thật: đặt <code>app.momo.simulate=false</code> — app sẽ gọi
+            <code>test-payment.momo.vn</code> và chuyển sang trang thanh toán MoMo.
+        </p>
+
+    </div>
+</main>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

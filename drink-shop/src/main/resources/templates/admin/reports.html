@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Báo cáo')}"></head>
+<body class="admin-body">
+
+<div class="admin-shell">
+    <aside th:replace="~{fragments/admin :: sidebar('reports')}"></aside>
+
+    <main class="admin-main">
+
+        <div class="admin-bar">
+            <div>
+                <h1>Báo cáo doanh thu</h1>
+                <p class="sub">Tổng hợp từ các VIEW có sẵn trong CSDL</p>
+            </div>
+            <div class="right">
+                <a class="btn btn-outline btn-sm" th:href="@{/admin}">
+                    <svg class="icon icon-sm"><use href="#i-chevron-left"/></svg>
+                    Tổng quan
+                </a>
+            </div>
+        </div>
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <!-- BIỂU ĐỒ -->
+        <div class="panel" style="margin-bottom:22px">
+            <div class="panel-head">
+                <div>
+                    <h2>Doanh thu 14 ngày gần nhất</h2>
+                    <span class="tiny muted">tách theo kênh bán (online / tại quầy)</span>
+                </div>
+                <span class="badge badge-primary badge-plain">VNĐ</span>
+            </div>
+            <div class="panel-body">
+                <div class="chart-box tall">
+                    <canvas id="chartRevenue"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="cols" style="margin-bottom:22px">
+            <div class="panel">
+                <div class="panel-head"><h2>Trạng thái đơn</h2></div>
+                <div class="panel-body">
+                    <div class="chart-box"><canvas id="chartStatus"></canvas></div>
+                </div>
+            </div>
+            <div class="panel">
+                <div class="panel-head"><h2>Phương thức thanh toán</h2></div>
+                <div class="panel-body">
+                    <div class="chart-box"><canvas id="chartPayment"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel" style="margin-bottom:22px">
+            <div class="panel-head">
+                <div>
+                    <h2>Top 5 đồ uống bán chạy</h2>
+                    <span class="tiny muted">theo số lượng ly đã bán</span>
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="chart-box"><canvas id="chartTop"></canvas></div>
+            </div>
+        </div>
+
+        <div class="stack">
+
+            <div class="panel">
+                <div class="panel-head">
+                    <div>
+                        <h2>Doanh thu theo ngày &amp; kênh bán</h2>
+                        <span class="tiny muted">view v_daily_revenue</span>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table class="data">
+                        <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Kênh bán</th>
+                            <th class="num">Đơn hoàn thành</th>
+                            <th class="num">Doanh thu</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="row : ${revenueRows}">
+                            <td th:text="${@fmt.date(row.saleDate)}">14/11/2026</td>
+                            <td>
+                                <span class="badge" th:classappend="${row.orderType == 'ONLINE'} ? 'badge-info' : 'badge-secondary'"
+                                      th:text="${row.orderType == 'ONLINE' ? 'Online' : 'Tại quầy'}">Online</span>
+                            </td>
+                            <td class="num" th:text="${row.totalOrders}">0</td>
+                            <td class="num strong" th:text="${@fmt.vnd(row.revenue)}">0đ</td>
+                        </tr>
+                        <tr th:if="${revenueRows.isEmpty()}">
+                            <td colspan="4" class="muted">Chưa có dữ liệu.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="cols">
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Món bán chạy</h2>
+                            <span class="tiny muted">view v_top_products</span>
+                        </div>
+                    </div>
+                    <div class="table-scroll">
+                        <table class="data" style="min-width:420px">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Đồ uống</th>
+                                <th class="num">SL bán</th>
+                                <th class="num">Doanh thu</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="row, st : ${topProducts}">
+                                <td th:text="${st.count}">1</td>
+                                <td class="strong" th:text="${row.productName}">Trà sữa</td>
+                                <td class="num" th:text="${row.qtySold}">0</td>
+                                <td class="num" th:text="${@fmt.vnd(row.revenue)}">0đ</td>
+                            </tr>
+                            <tr th:if="${topProducts.isEmpty()}">
+                                <td colspan="4" class="muted">Chưa có dữ liệu.</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>Nguyên liệu dưới mức tối thiểu</h2>
+                            <span class="tiny muted">view v_low_stock</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div th:if="${lowStock.isEmpty()}" class="muted small">Tất cả nguyên liệu đều đủ.</div>
+                        <div th:each="i : ${lowStock}"
+                             style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)">
+                            <div>
+                                <div class="strong small" th:text="${i.name}">Trân châu</div>
+                                <div class="tiny muted">
+                                    <span th:text="${i.stockQty}">2</span> / <span th:text="${i.minQty}">3</span>
+                                    <span th:text="${i.unit}">kg</span>
+                                </div>
+                            </div>
+                            <span class="badge badge-danger">Cần nhập</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<script th:inline="javascript">
+    window.CHART_REVENUE = /*[[${revenueChart}]]*/ [];
+    window.CHART_STATUS = /*[[${statusChart}]]*/ [];
+    window.CHART_PAYMENT = /*[[${paymentChart}]]*/ [];
+    window.CHART_TOP = /*[[${topProductChart}]]*/ [];
+</script>
+<script th:src="@{/js/vendor/chart.umd.min.js}"></script>
+<script th:src="@{/js/admin-charts.js}"></script>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

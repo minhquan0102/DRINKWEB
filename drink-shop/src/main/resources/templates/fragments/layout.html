@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · Drink Shop'">Drink Shop</title>
+    <meta name="description" content="Trà sữa, cà phê, trà trái cây, sinh tố và đá xay — đặt online giao tận nơi.">
+    <link rel="preload" th:href="@{/css/app.css}" as="style">
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="icon" type="image/svg+xml" th:href="@{/images/drinks/tra-sua.svg}">
+</head>
+<body>
+
+<!-- ============ HEADER ============ -->
+<header class="topbar" th:fragment="navbar">
+    <div th:replace="~{fragments/icons :: sprite}"></div>
+    <div class="topbar-inner">
+
+        <a class="logo" th:href="@{/}">
+            <span class="logo-mark">
+                <svg class="icon"><use href="#i-cup"/></svg>
+            </span>
+            <span class="logo-text">Drink<span class="accent">Shop</span></span>
+        </a>
+
+        <nav class="nav">
+            <a class="nav-link" th:href="@{/}"
+               th:classappend="${currentPath == '/'} ? 'active'">
+                <svg class="icon icon-sm"><use href="#i-home"/></svg>
+                Trang chủ
+            </a>
+            <a class="nav-link" th:href="@{/menu}"
+               th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/menu')} ? 'active'">
+                <svg class="icon icon-sm"><use href="#i-grid"/></svg>
+                Menu
+            </a>
+            <a class="nav-link" th:if="${isManager}" th:href="@{/admin}"
+               th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/admin')} ? 'active'">
+                <svg class="icon icon-sm"><use href="#i-chart"/></svg>
+                Quản trị
+            </a>
+            <a class="nav-link" th:if="${isStaff and !isManager}" th:href="@{/admin/orders}"
+               th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/admin/orders')} ? 'active'">
+                <svg class="icon icon-sm"><use href="#i-package"/></svg>
+                Đơn hàng
+            </a>
+            <a class="nav-link" th:if="${currentUser != null and !isStaff}" th:href="@{/orders}"
+               th:classappend="${currentPath != null and #strings.startsWith(currentPath, '/orders')} ? 'active'">
+                <svg class="icon icon-sm"><use href="#i-clock"/></svg>
+                Đơn của tôi
+            </a>
+
+            <a class="nav-link nav-auth" th:if="${currentUser == null}" th:href="@{/login}">
+                <svg class="icon icon-sm"><use href="#i-user"/></svg>
+                Đăng nhập
+            </a>
+            <a class="nav-link nav-auth" th:if="${currentUser == null}" th:href="@{/register}">
+                <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                Đăng ký
+            </a>
+            <form class="nav-auth" th:if="${currentUser != null}" th:action="@{/logout}" method="post"
+                  style="margin:0">
+                <button class="nav-link" type="submit">
+                    <svg class="icon icon-sm"><use href="#i-logout"/></svg>
+                    Đăng xuất
+                </button>
+            </form>
+        </nav>
+
+        <div class="nav-spacer"></div>
+
+        <div class="nav-actions">
+            <a class="cart-btn" th:href="@{/cart}">
+                <svg class="icon"><use href="#i-cart"/></svg>
+                <span class="cart-label">Giỏ hàng</span>
+                <span class="cart-count" th:text="${cartCount}">0</span>
+            </a>
+
+            <th:block th:if="${currentUser != null}">
+                <a class="user-chip" th:href="@{/profile}" title="Hồ sơ cá nhân">
+                    <span class="avatar" th:text="${#strings.substring(currentUser.fullName, 0, 1)}">A</span>
+                    <span class="uname" th:text="${currentUser.fullName}">Khách</span>
+                </a>
+                <form th:action="@{/logout}" method="post" style="margin:0">
+                    <button class="btn btn-ghost btn-sm" type="submit" title="Đăng xuất">
+                        <svg class="icon icon-sm"><use href="#i-logout"/></svg>
+                        <span class="uname">Đăng xuất</span>
+                    </button>
+                </form>
+            </th:block>
+
+            <th:block th:if="${currentUser == null}">
+                <a class="btn btn-ghost btn-sm" th:href="@{/login}">Đăng nhập</a>
+                <a class="btn btn-primary btn-sm" th:href="@{/register}">Đăng ký</a>
+            </th:block>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Mở menu">
+            <svg class="icon"><use href="#i-menu"/></svg>
+        </button>
+    </div>
+</header>
+
+<!-- ============ FLASH MESSAGE ============ -->
+<div th:fragment="alerts">
+    <div class="alert alert-success" th:if="${success}">
+        <svg class="icon"><use href="#i-check-circle"/></svg>
+        <span th:text="${success}">Thành công</span>
+    </div>
+    <div class="alert alert-danger" th:if="${error}">
+        <svg class="icon"><use href="#i-alert"/></svg>
+        <span th:text="${error}">Có lỗi xảy ra</span>
+    </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer" th:fragment="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <a class="logo" th:href="@{/}">
+                    <span class="logo-mark"><svg class="icon"><use href="#i-cup"/></svg></span>
+                    <span class="logo-text">Drink<span class="accent">Shop</span></span>
+                </a>
+                <p>
+                    Quán nước giải khát pha chế tươi mỗi ngày: trà sữa, cà phê, trà trái cây,
+                    sinh tố và đá xay. Đặt online, giao tận nơi.
+                </p>
+                <div class="pill-row">
+                    <span class="pay-badge">MoMo</span>
+                    <span class="pay-badge">VNPay</span>
+                    <span class="pay-badge">COD</span>
+                </div>
+            </div>
+
+            <div>
+                <h4>Khám phá</h4>
+                <div class="footer-links">
+                    <a th:href="@{/}">Trang chủ</a>
+                    <a th:href="@{/menu}">Menu đồ uống</a>
+                    <a th:href="@{/cart}">Giỏ hàng</a>
+                    <a th:if="${currentUser != null}" th:href="@{/orders}">Đơn của tôi</a>
+                </div>
+            </div>
+
+            <div>
+                <h4>Tài khoản</h4>
+                <div class="footer-links">
+                    <a th:if="${currentUser == null}" th:href="@{/login}">Đăng nhập</a>
+                    <a th:if="${currentUser == null}" th:href="@{/register}">Đăng ký</a>
+                    <a th:if="${isManager}" th:href="@{/admin}">Trang quản trị</a>
+                    <a th:if="${isStaff and !isManager}" th:href="@{/admin/orders}">Xử lý đơn hàng</a>
+                    <a th:if="${currentUser != null}" th:href="@{/login}">Hồ sơ cá nhân</a>
+                </div>
+            </div>
+
+            <div>
+                <h4>Liên hệ</h4>
+                <div class="footer-links">
+                    <span style="display:flex;gap:9px;align-items:flex-start">
+                        <svg class="icon icon-sm" style="margin-top:2px"><use href="#i-map-pin"/></svg>
+                        12 Nguyễn Huệ, Quận 1, TP. Hồ Chí Minh
+                    </span>
+                    <span style="display:flex;gap:9px;align-items:center">
+                        <svg class="icon icon-sm"><use href="#i-phone"/></svg>
+                        0901 000 001
+                    </span>
+                    <span style="display:flex;gap:9px;align-items:center">
+                        <svg class="icon icon-sm"><use href="#i-clock"/></svg>
+                        08:00 – 22:00 hằng ngày
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <span>© 2026 Drink Shop · Đồ án Spring Boot + Thymeleaf + MySQL</span>
+            <span>Phục vụ bằng Java 25 · Spring Boot 4.1.2</span>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

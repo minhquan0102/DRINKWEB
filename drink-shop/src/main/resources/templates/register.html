@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đăng ký')}"></head>
+<body>
+
+<div class="auth">
+
+    <aside class="auth-aside">
+        <div th:replace="~{fragments/icons :: sprite}"></div>
+
+        <a class="logo" th:href="@{/}">
+            <span class="logo-mark"><svg class="icon"><use href="#i-cup"/></svg></span>
+            <span class="logo-text">Drink<span class="accent">Shop</span></span>
+        </a>
+
+        <div class="auth-quote">
+            <h2>Tham gia Drink Shop<br>nhận ưu đãi đầu tiên.</h2>
+            <p>Tạo tài khoản để đặt món nhanh hơn, lưu địa chỉ giao hàng và tích điểm thành viên.</p>
+
+            <div class="auth-points" style="margin-top:26px">
+                <div><svg class="icon icon-sm"><use href="#i-sparkles"/></svg> Ưu đãi chào mừng đến 20%</div>
+                <div><svg class="icon icon-sm"><use href="#i-map-pin"/></svg> Lưu nhiều địa chỉ giao hàng</div>
+                <div><svg class="icon icon-sm"><use href="#i-clock"/></svg> Xem lại lịch sử đơn dễ dàng</div>
+            </div>
+        </div>
+
+        <img class="auth-art" th:src="@{/images/hero-drink.svg}" alt="">
+    </aside>
+
+    <div class="auth-main">
+        <div class="auth-card" style="max-width:460px">
+
+            <a class="logo brand-mobile" th:href="@{/}">
+                <span class="logo-mark"><svg class="icon"><use href="#i-cup"/></svg></span>
+                <span class="logo-text">Drink<span class="accent">Shop</span></span>
+            </a>
+
+            <h1>Tạo tài khoản</h1>
+            <p class="sub">Chỉ mất 30 giây, bạn đã có thể đặt món ngay.</p>
+
+            <div class="alert alert-danger" th:if="${errorMessage}">
+                <svg class="icon"><use href="#i-alert"/></svg>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <form th:action="@{/register}" th:object="${registerForm}" method="post">
+                <div class="field">
+                    <label for="fullName">Họ và tên</label>
+                    <input type="text" id="fullName" th:field="*{fullName}" placeholder="Nguyễn Văn A" autocomplete="name">
+                    <span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></span>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="phone">Số điện thoại</label>
+                        <input type="tel" id="phone" th:field="*{phone}" placeholder="0912345678" autocomplete="tel">
+                        <span class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></span>
+                    </div>
+                    <div class="field">
+                        <label for="email">Email (không bắt buộc)</label>
+                        <input type="email" id="email" th:field="*{email}" placeholder="ban@example.com" autocomplete="email">
+                        <span class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="password">Mật khẩu</label>
+                        <input type="password" id="password" th:field="*{password}" placeholder="Tối thiểu 6 ký tự"
+                               autocomplete="new-password">
+                        <span class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></span>
+                    </div>
+                    <div class="field">
+                        <label for="confirmPassword">Nhập lại mật khẩu</label>
+                        <input type="password" id="confirmPassword" th:field="*{confirmPassword}"
+                               autocomplete="new-password">
+                        <span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}"
+                              th:errors="*{confirmPassword}"></span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-block btn-lg" type="submit" style="margin-top:6px">
+                    Tạo tài khoản
+                    <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+                </button>
+            </form>
+
+            <div class="auth-foot">
+                Đã có tài khoản? <a th:href="@{/login}">Đăng nhập</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

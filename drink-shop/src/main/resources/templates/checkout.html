@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Đặt hàng')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow">Bước 2 / 3</span>
+                <h1>Thông tin đặt hàng</h1>
+                <p class="sub">Chọn cách nhận hàng, địa chỉ và phương thức thanh toán.</p>
+            </div>
+            <a class="btn btn-ghost btn-sm" th:href="@{/cart}">
+                <svg class="icon icon-sm"><use href="#i-chevron-left"/></svg>
+                Sửa giỏ hàng
+            </a>
+        </div>
+
+        <div class="steps">
+            <span class="step done"><span class="step-num">✓</span> Giỏ hàng</span>
+            <span class="step-line"></span>
+            <span class="step active"><span class="step-num">2</span> Thông tin</span>
+            <span class="step-line"></span>
+            <span class="step"><span class="step-num">3</span> Hoàn tất</span>
+        </div>
+
+        <form th:action="@{/checkout}" th:object="${checkoutForm}" method="post">
+            <div class="checkout-layout">
+
+                <div class="stack">
+
+                    <!-- 1. HÌNH THỨC NHẬN HÀNG -->
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h2><span class="badge badge-primary badge-plain">1</span> Hình thức nhận hàng</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="field">
+                                <span class="field-label">Kênh đặt hàng</span>
+                                <div class="radio-cards">
+                                    <label class="radio-card">
+                                        <input type="radio" th:field="*{orderType}" value="ONLINE">
+                                        <b><svg class="icon icon-sm"><use href="#i-truck"/></svg> Đặt online</b>
+                                        <span>Giao tận nơi hoặc đến lấy</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" th:field="*{orderType}" value="AT_COUNTER">
+                                        <b><svg class="icon icon-sm"><use href="#i-store"/></svg> Tại quầy</b>
+                                        <span>Đặt trước, nhận tại quán</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="field">
+                                <span class="field-label">Cách nhận hàng</span>
+                                <div class="radio-cards">
+                                    <label class="radio-card">
+                                        <input type="radio" th:field="*{fulfillment}" value="DELIVERY">
+                                        <b><svg class="icon icon-sm"><use href="#i-truck"/></svg> Giao tận nơi</b>
+                                        <span>+15.000đ phí giao</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" th:field="*{fulfillment}" value="TAKEAWAY">
+                                        <b><svg class="icon icon-sm"><use href="#i-package"/></svg> Mang đi</b>
+                                        <span>Đến quán lấy</span>
+                                    </label>
+                                    <label class="radio-card">
+                                        <input type="radio" th:field="*{fulfillment}" value="DINE_IN">
+                                        <b><svg class="icon icon-sm"><use href="#i-store"/></svg> Tại chỗ</b>
+                                        <span>Ngồi uống tại quán</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="field" data-when="DELIVERY" th:if="${!addresses.isEmpty()}">
+                                <label for="addressId">Địa chỉ giao hàng</label>
+                                <select id="addressId" th:field="*{addressId}">
+                                    <option value="">-- Chọn địa chỉ --</option>
+                                    <option th:each="a : ${addresses}" th:value="${a.id}"
+                                            th:text="${a.receiverName} + ' · ' + ${a.fullAddress}">Địa chỉ</option>
+                                </select>
+                            </div>
+
+                            <div class="alert alert-warning" data-when="DELIVERY"
+                                 th:if="${addresses.isEmpty() and !staffCheckout}" style="margin-bottom:0">
+                                <svg class="icon"><use href="#i-alert"/></svg>
+                                <span>Bạn chưa có địa chỉ giao hàng. Hãy thêm địa chỉ ở khung bên dưới, hoặc chọn “Mang đi”.</span>
+                            </div>
+
+                            <div class="field" data-when="DINE_IN" th:if="${staffCheckout}">
+                                <label for="tableNo">Số bàn</label>
+                                <input type="text" id="tableNo" th:field="*{tableNo}" placeholder="B3" maxlength="10">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. THANH TOÁN -->
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h2><span class="badge badge-primary badge-plain">2</span> Phương thức thanh toán</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="radio-cards">
+                                <label class="radio-card">
+                                    <input type="radio" th:field="*{paymentMethod}" value="CASH">
+                                    <b><svg class="icon icon-sm"><use href="#i-wallet"/></svg> Tiền mặt</b>
+                                    <span>Trả khi nhận tại quán</span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" th:field="*{paymentMethod}" value="COD">
+                                    <b><svg class="icon icon-sm"><use href="#i-truck"/></svg> Khi nhận hàng</b>
+                                    <span>COD cho đơn giao</span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" th:field="*{paymentMethod}" value="MOMO">
+                                    <b><svg class="icon icon-sm"><use href="#i-card"/></svg> MoMo</b>
+                                    <span>Ví điện tử</span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" th:field="*{paymentMethod}" value="VNPAY">
+                                    <b><svg class="icon icon-sm"><use href="#i-card"/></svg> VNPay</b>
+                                    <span>Cổng thanh toán (sandbox)</span>
+                                </label>
+                                <label class="radio-card">
+                                    <input type="radio" th:field="*{paymentMethod}" value="BANK_TRANSFER">
+                                    <b><svg class="icon icon-sm"><use href="#i-card"/></svg> Chuyển khoản</b>
+                                    <span>Chuyển trước</span>
+                                </label>
+                            </div>
+
+                            <div class="alert alert-info" style="margin:16px 0 0">
+                                <svg class="icon"><use href="#i-info"/></svg>
+                                <span>
+                                    Thanh toán VNPay sẽ chuyển sang cổng sandbox. Thẻ test:
+                                    <b>NCB · 9704 1985 2619 1432 198</b> — NGUYEN VAN A,
+                                    phát hành <b>07/15</b>, OTP <b>123456</b>.
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. GHI CHÚ -->
+                    <div class="panel">
+                        <div class="panel-head">
+                            <h2><span class="badge badge-primary badge-plain">3</span> Ghi chú cho quán</h2>
+                        </div>
+                        <div class="panel-body">
+                            <div class="field" style="margin-bottom:0">
+                                <label for="note">Ghi chú (không bắt buộc)</label>
+                                <textarea id="note" th:field="*{note}"
+                                          placeholder="Ví dụ: giao trước 18h, gọi trước khi giao, ít đá..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TÓM TẮT -->
+                <aside class="panel sticky">
+                    <div class="panel-head">
+                        <h2>Đơn hàng của bạn</h2>
+                        <span class="small muted" th:text="${cart.totalQuantity} + ' ly'">0 ly</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="line-item" th:each="item : ${cart.items}"
+                             style="grid-template-columns:44px minmax(0,1fr) auto;padding:10px 0">
+                            <div class="line-thumb" style="width:44px;height:44px;border-radius:10px">
+                                <img th:src="${item.imageUrl}" th:alt="${item.productName}"
+                                     data-fallback="@{/images/drinks/mac-dinh.svg}">
+                            </div>
+                            <div>
+                                <div class="small strong" th:text="${item.productName}">Tên</div>
+                                <div class="tiny muted" th:text="${item.quantity} + ' × ' + ${item.sizeName}">1 × Size M</div>
+                            </div>
+                            <div class="small strong" th:text="${@fmt.vnd(item.lineTotal)}">70.000đ</div>
+                        </div>
+
+                        <hr class="divider-dashed">
+
+                        <div class="field">
+                            <label for="voucherCode">Mã giảm giá</label>
+                            <div class="input-group">
+                                <input type="text" id="voucherCode" th:field="*{voucherCode}" placeholder="WELCOME10">
+                                <button class="btn btn-outline" type="submit"
+                                        formaction="/checkout" formmethod="get" formnovalidate>Áp dụng</button>
+                            </div>
+                            <span class="small" th:if="${voucherMessage != null}"
+                                  th:classappend="${voucherOk} ? 'muted' : 'field-error'"
+                                  th:text="${voucherMessage}"></span>
+                        </div>
+
+                        <div class="sum-row">
+                            <span>Tạm tính</span>
+                            <span th:text="${@fmt.vnd(subtotal)}">0đ</span>
+                        </div>
+                        <div class="sum-row discount" th:if="${discount.signum() > 0}">
+                            <span>Giảm giá</span>
+                            <span th:text="'-' + ${@fmt.vnd(discount)}">-0đ</span>
+                        </div>
+                        <div class="sum-row">
+                            <span>Phí giao hàng</span>
+                            <span class="muted small">+15.000đ nếu giao</span>
+                        </div>
+
+                        <div class="sum-total">
+                            <span class="label">Tổng cộng</span>
+                            <span class="value" th:text="${@fmt.vnd(total)}">0đ</span>
+                        </div>
+
+                        <button class="btn btn-primary btn-block btn-lg" type="submit" style="margin-top:14px">
+                            <svg class="icon icon-sm"><use href="#i-check-circle"/></svg>
+                            Xác nhận đặt hàng
+                        </button>
+
+                        <div class="note" style="margin-top:14px">
+                            <svg class="icon icon-sm"><use href="#i-shield"/></svg>
+                            <span>Bằng việc đặt hàng, bạn đồng ý với chính sách đổi trả của quán.</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </form>
+
+        <!-- THÊM ĐỊA CHỈ MỚI (form riêng, không lồng vào form đặt hàng) -->
+        <details class="panel" th:if="${!staffCheckout}" style="margin-top:22px">
+            <summary style="cursor:pointer;padding:18px 22px;font-weight:800;display:flex;align-items:center;gap:9px">
+                <svg class="icon icon-sm"><use href="#i-plus"/></svg>
+                Thêm địa chỉ giao hàng mới
+            </summary>
+            <form th:action="@{/checkout/address}" method="post" style="padding:0 22px 24px">
+                <div class="form-grid">
+                    <div class="field">
+                        <label for="receiverName">Người nhận</label>
+                        <input type="text" id="receiverName" name="receiverName" required maxlength="100">
+                    </div>
+                    <div class="field">
+                        <label for="receiverPhone">Số điện thoại</label>
+                        <input type="tel" id="receiverPhone" name="receiverPhone" required maxlength="15">
+                    </div>
+                    <div class="field" style="grid-column:1/-1">
+                        <label for="addressLine">Địa chỉ</label>
+                        <input type="text" id="addressLine" name="addressLine"
+                               placeholder="Số nhà, tên đường" required maxlength="255">
+                    </div>
+                    <div class="field">
+                        <label for="ward">Phường / xã</label>
+                        <input type="text" id="ward" name="ward" maxlength="100">
+                    </div>
+                    <div class="field">
+                        <label for="district">Quận / huyện</label>
+                        <input type="text" id="district" name="district" maxlength="100">
+                    </div>
+                    <div class="field">
+                        <label for="city">Tỉnh / thành phố</label>
+                        <input type="text" id="city" name="city" value="TP. Hồ Chí Minh" required maxlength="100">
+                    </div>
+                </div>
+                <label class="check" style="margin-right:16px">
+                    <input type="checkbox" name="isDefault" value="true"> Đặt làm địa chỉ mặc định
+                </label>
+                <button class="btn btn-outline" type="submit" style="margin-top:14px">Lưu địa chỉ</button>
+            </form>
+        </details>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>

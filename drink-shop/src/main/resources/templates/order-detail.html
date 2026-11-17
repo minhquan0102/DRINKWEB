@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Chi tiết đơn hàng')}"></head>
+<body>
+
+<header th:replace="~{fragments/layout :: navbar}"></header>
+
+<main class="page">
+    <div class="container">
+
+        <div th:replace="~{fragments/layout :: alerts}"></div>
+
+        <nav class="breadcrumb">
+            <a th:href="@{/}">Trang chủ</a>
+            <span class="sep">/</span>
+            <a th:href="${adminView} ? @{/admin/orders} : @{/orders}"
+               th:text="${adminView} ? 'Danh sách đơn' : 'Đơn của tôi'">Đơn của tôi</a>
+            <span class="sep">/</span>
+            <span th:text="${order.orderCode}">DH...</span>
+        </nav>
+
+        <div class="page-head">
+            <div>
+                <span class="eyebrow">Chi tiết đơn</span>
+                <h1 th:text="'Đơn ' + ${order.orderCode}">Đơn DH...</h1>
+                <p class="sub">
+                    Đặt lúc <span th:text="${@fmt.dt(order.createdAt)}">14/11/2026 09:15</span>
+                    · <span th:text="${order.orderType.name() == 'ONLINE' ? 'Đặt online' : 'Tại quầy'}"></span>
+                </p>
+            </div>
+            <span class="badge" th:classappend="'badge-' + ${order.status.badge}"
+                  th:text="${order.status.label}" style="font-size:.86rem;padding:7px 14px">Trạng thái</span>
+        </div>
+
+        <div class="cols">
+
+            <div class="stack">
+                <!-- MÓN -->
+                <div class="panel">
+                    <div class="panel-head">
+                        <h2>Món đã đặt</h2>
+                        <span class="small muted" th:text="${order.totalQuantity} + ' ly'">0 ly</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="line-item" th:each="item : ${order.items}">
+                            <div class="line-thumb">
+                                <img th:src="${item.product.displayImage}" th:alt="${item.product.name}"
+                                     data-fallback="@{/images/drinks/mac-dinh.svg}">
+                            </div>
+                            <div>
+                                <div class="line-title">
+                                    <span th:text="${item.product.name}">Tên món</span>
+                                    <span class="badge badge-secondary badge-plain" th:text="'×' + ${item.quantity}">×1</span>
+                                </div>
+                                <div class="line-meta">
+                                    <span th:text="${item.size.name}">Size M</span>
+                                    <span>Đường <b th:text="${item.sugarLevel}">100%</b></span>
+                                    <span>Đá <b th:text="${item.iceLevel}">100%</b></span>
+                                </div>
+                                <div class="line-meta" th:if="${!item.toppings.isEmpty()}">
+                                    <span>
+                                        Topping:
+                                        <span th:each="t, st : ${item.toppings}">
+                                            <span th:text="${t.topping.name}"></span><span th:if="${!st.last}">, </span>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div class="line-meta" th:if="${item.note != null}">
+                                    <span th:text="'Ghi chú: ' + ${item.note}"></span>
+                                </div>
+                            </div>
+                            <div class="line-price">
+                                <span th:text="${@fmt.vnd(item.lineTotal)}">0đ</span>
+                                <small th:text="${@fmt.vnd(item.unitPrice)} + '/ly'"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- THÔNG TIN NHẬN HÀNG -->
+                <div class="panel">
+                    <div class="panel-head"><h2>Thông tin nhận hàng</h2></div>
+                    <div class="panel-body">
+                        <div class="kv">
+                            <div>
+                                <div class="k">Hình thức</div>
+                                <div class="v" th:text="${order.fulfillment.label}">Giao hàng</div>
+                            </div>
+                            <div th:if="${order.tableNo != null}">
+                                <div class="k">Số bàn</div>
+                                <div class="v" th:text="${order.tableNo}">B3</div>
+                            </div>
+                            <div th:if="${order.address != null}">
+                                <div class="k">Địa chỉ giao</div>
+                                <div class="v">
+                                    <span th:text="${order.address.receiverName}"></span> ·
+                                    <span th:text="${order.address.receiverPhone}"></span><br>
+                                    <span class="muted" th:text="${order.address.fullAddress}"></span>
+                                </div>
+                            </div>
+                            <div th:if="${order.customer != null}">
+                                <div class="k">Khách hàng</div>
+                                <div class="v" th:text="${order.customer.user.fullName}">Khách</div>
+                            </div>
+                            <div th:if="${order.customer == null}">
+                                <div class="k">Khách hàng</div>
+                                <div class="v muted">Khách vãng lai</div>
+                            </div>
+                            <div th:if="${order.staff != null}">
+                                <div class="k">Nhân viên xử lý</div>
+                                <div class="v" th:text="${order.staff.user.fullName}">Nhân viên</div>
+                            </div>
+                            <div th:if="${order.note != null}">
+                                <div class="k">Ghi chú</div>
+                                <div class="v" th:text="${order.note}">Ghi chú</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <aside class="stack">
+                <!-- THANH TOÁN -->
+                <div class="panel sticky">
+                    <div class="panel-head"><h2>Thanh toán</h2></div>
+                    <div class="panel-body">
+                        <div class="sum-row">
+                            <span>Tạm tính</span>
+                            <span th:text="${@fmt.vnd(order.subtotal)}">0đ</span>
+                        </div>
+                        <div class="sum-row discount" th:if="${order.discountAmount.signum() > 0}">
+                            <span>
+                                Giảm giá
+                                <span class="tiny muted" th:if="${order.voucher != null}"
+                                      th:text="'(' + ${order.voucher.code} + ')'"></span>
+                            </span>
+                            <span th:text="'-' + ${@fmt.vnd(order.discountAmount)}">-0đ</span>
+                        </div>
+                        <div class="sum-row" th:if="${order.deliveryFee.signum() > 0}">
+                            <span>Phí giao hàng</span>
+                            <span th:text="${@fmt.vnd(order.deliveryFee)}">15.000đ</span>
+                        </div>
+                        <div class="sum-total">
+                            <span class="label">Tổng cộng</span>
+                            <span class="value" th:text="${@fmt.vnd(order.totalAmount)}">0đ</span>
+                        </div>
+
+                        <div th:if="${payment != null}" style="margin-top:16px;padding-top:14px;border-top:1px dashed var(--line)">
+                            <div class="sum-row">
+                                <span class="muted small">Phương thức</span>
+                                <span th:text="${payment.method.label}">Tiền mặt</span>
+                            </div>
+                            <div class="sum-row">
+                                <span class="muted small">Trạng thái</span>
+                                <span class="badge" th:classappend="'badge-' + ${payment.status.badge}"
+                                      th:text="${payment.status.label}">Đã thanh toán</span>
+                            </div>
+                            <div class="sum-row" th:if="${payment.paidAt != null}">
+                                <span class="muted small">Thanh toán lúc</span>
+                                <span class="small" th:text="${@fmt.dt(payment.paidAt)}"></span>
+                            </div>
+                            <div class="sum-row" th:if="${payment.transactionCode != null}">
+                                <span class="muted small">Mã giao dịch</span>
+                                <span class="small mono" style="font-weight:700"
+                                      th:text="${payment.transactionCode}">SIM123</span>
+                            </div>
+
+                            <a class="btn btn-primary btn-block" style="margin-top:14px"
+                               th:if="${payment.status.name() != 'PAID' and order.status.name() != 'CANCELLED' and payment.status.name() != 'REFUNDED'}"
+                               th:href="${payment.method.name() == 'MOMO' ? '/payment/momo/' + order.orderCode : '/payment/vnpay/' + order.orderCode}">
+                                <svg class="icon icon-sm"><use href="#i-card"/></svg>
+                                <span th:text="${payment.status.name() == 'FAILED' ? (payment.method.name() == 'MOMO' ? 'Thanh toán lại bằng MoMo' : 'Thanh toán lại bằng VNPay') : (payment.method.name() == 'MOMO' ? 'Thanh toán MoMo' : 'Thanh toán VNPay')}">Thanh toán</span>
+                            </a>
+                            <p class="tiny muted" style="margin:8px 0 0"
+                               th:if="${payment.status.name() != 'PAID' and order.status.name() != 'CANCELLED' and payment.status.name() != 'REFUNDED'}">
+                                Đơn chưa thanh toán — bấm nút để mở cổng VNPay.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TIẾN TRÌNH -->
+                <div class="panel" th:if="${order.status.name() != 'CANCELLED'}">
+                    <div class="panel-head"><h2>Tiến trình</h2></div>
+                    <div class="panel-body">
+                        <div class="timeline">
+                            <div class="tl-item" th:classappend="${order.status.ordinal() > 0 ? 'done' : (order.status.ordinal() == 0 ? 'current' : '')}">
+                                <div class="tl-dot">
+                                    <svg class="icon icon-sm"><use href="#i-check"/></svg>
+                                </div>
+                                <div class="tl-body">
+                                    <b>Chờ xác nhận</b>
+                                    <span>Quán đã nhận đơn</span>
+                                </div>
+                            </div>
+                            <div class="tl-item" th:classappend="${order.status.ordinal() > 1 ? 'done' : (order.status.ordinal() == 1 ? 'current' : '')}">
+                                <div class="tl-dot"><svg class="icon icon-sm"><use href="#i-check"/></svg></div>
+                                <div class="tl-body"><b>Đã xác nhận</b><span>Quán chuẩn bị nguyên liệu</span></div>
+                            </div>
+                            <div class="tl-item" th:classappend="${order.status.ordinal() > 2 ? 'done' : (order.status.ordinal() == 2 ? 'current' : '')}">
+                                <div class="tl-dot"><svg class="icon icon-sm"><use href="#i-cup"/></svg></div>
+                                <div class="tl-body"><b>Đang pha chế</b><span>Barista đang làm ly của bạn</span></div>
+                            </div>
+                            <div class="tl-item" th:classappend="${order.status.ordinal() > 3 ? 'done' : (order.status.ordinal() == 3 ? 'current' : '')}">
+                                <div class="tl-dot"><svg class="icon icon-sm"><use href="#i-package"/></svg></div>
+                                <div class="tl-body"><b>Sẵn sàng</b><span>Đã đóng gói, chờ nhận</span></div>
+                            </div>
+                            <div class="tl-item" th:classappend="${order.status.ordinal() > 4 ? 'done' : (order.status.ordinal() == 4 ? 'current' : '')}">
+                                <div class="tl-dot"><svg class="icon icon-sm"><use href="#i-truck"/></svg></div>
+                                <div class="tl-body"><b>Đang giao</b><span>Shipper đang trên đường</span></div>
+                            </div>
+                            <div class="tl-item" th:classappend="${order.status.ordinal() >= 5 ? 'done' : ''}">
+                                <div class="tl-dot"><svg class="icon icon-sm"><use href="#i-check-circle"/></svg></div>
+                                <div class="tl-body"><b>Hoàn thành</b><span>Chúc bạn ngon miệng</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger" th:if="${order.status.name() == 'CANCELLED'}">
+                    <svg class="icon"><use href="#i-alert"/></svg>
+                    <span>Đơn hàng này đã được huỷ.</span>
+                </div>
+
+                <!-- HÀNH ĐỘNG -->
+                <div class="panel" th:if="${canCancel}">
+                    <div class="panel-body">
+                        <div class="panel-title">Huỷ đơn</div>
+                        <p class="small muted">Đơn đang chờ xác nhận, bạn có thể huỷ ngay.</p>
+                        <form th:action="@{/orders/{id}/cancel(id=${order.id})}" method="post"
+                              data-confirm="Bạn chắc chắn muốn huỷ đơn này?">
+                            <button class="btn btn-danger btn-block" type="submit">
+                                <svg class="icon icon-sm"><use href="#i-close"/></svg>
+                                Huỷ đơn hàng
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="panel" th:if="${!nextStatuses.isEmpty()}">
+                    <div class="panel-body">
+                        <div class="panel-title">Cập nhật trạng thái</div>
+                        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post"
+                              th:each="s : ${nextStatuses}" style="margin-bottom:8px">
+                            <input type="hidden" name="newStatus" th:value="${s}">
+                            <button class="btn btn-outline btn-block" type="submit">
+                                <svg class="icon icon-sm"><use href="#i-arrow-right"/></svg>
+                                <span th:text="'Chuyển: ' + ${s.label}">Chuyển</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+    </div>
+</main>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script th:src="@{/js/app.js}"></script>
+</body>
+</html>
